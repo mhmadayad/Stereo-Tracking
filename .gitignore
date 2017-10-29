@@ -36,3 +36,5 @@ build/*
 calib_imgs/*
 CMakeLists.txt.user
 Makefile
+
+.gitignore
