@@ -1,8 +1,0 @@
-/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/build/CMakeFiles/edit_cache.dir
-/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/build/CMakeFiles/rebuild_cache.dir
-/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/build/CMakeFiles/read.dir
-/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/build/CMakeFiles/undistort_rectify.dir
-/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/build/CMakeFiles/calibrate_stereo.dir
-/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/build/CMakeFiles/matching.dir
-/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/build/CMakeFiles/calibrate.dir
-/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/build/CMakeFiles/detection.dir
