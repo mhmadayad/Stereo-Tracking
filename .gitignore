@@ -1,1 +1,5 @@
-/build/*
+/build/
+/calib_imgs/
+/doxygen/
+*.bak
+
