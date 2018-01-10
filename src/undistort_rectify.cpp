@@ -59,9 +59,11 @@ int main(int argc, char const *argv[])
     cv::initUndistortRectifyMap(K2, D2, R2, P2, img2.size(), CV_32F, rmapx, rmapy);
     cv::remap(img1, imgU1, lmapx, lmapy, cv::INTER_LINEAR);
     cv::remap(img2, imgU2, rmapx, rmapy, cv::INTER_LINEAR);
-  
+
     imwrite(leftout_filename, imgU1);
     imwrite(rightout_filename, imgU2);
 
     return 0;
 }
+
+

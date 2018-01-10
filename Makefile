@@ -124,17 +124,17 @@ read/fast:
 .PHONY : read/fast
 
 #=============================================================================
-# Target rules for targets named undistort_rectify
+# Target rules for targets named calibrate
 
 # Build rule for target.
-undistort_rectify: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 undistort_rectify
-.PHONY : undistort_rectify
+calibrate: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 calibrate
+.PHONY : calibrate
 
 # fast build rule for target.
-undistort_rectify/fast:
-	$(MAKE) -f CMakeFiles/undistort_rectify.dir/build.make CMakeFiles/undistort_rectify.dir/build
-.PHONY : undistort_rectify/fast
+calibrate/fast:
+	$(MAKE) -f CMakeFiles/calibrate.dir/build.make CMakeFiles/calibrate.dir/build
+.PHONY : calibrate/fast
 
 #=============================================================================
 # Target rules for targets named calibrate_stereo
@@ -150,30 +150,106 @@ calibrate_stereo/fast:
 .PHONY : calibrate_stereo/fast
 
 #=============================================================================
-# Target rules for targets named calibrate
+# Target rules for targets named matching
 
 # Build rule for target.
-calibrate: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 calibrate
-.PHONY : calibrate
+matching: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 matching
+.PHONY : matching
 
 # fast build rule for target.
-calibrate/fast:
-	$(MAKE) -f CMakeFiles/calibrate.dir/build.make CMakeFiles/calibrate.dir/build
-.PHONY : calibrate/fast
+matching/fast:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/build
+.PHONY : matching/fast
 
 #=============================================================================
-# Target rules for targets named detection
+# Target rules for targets named undistort_rectify
 
 # Build rule for target.
-detection: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 detection
-.PHONY : detection
+undistort_rectify: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 undistort_rectify
+.PHONY : undistort_rectify
 
 # fast build rule for target.
-detection/fast:
-	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/build
-.PHONY : detection/fast
+undistort_rectify/fast:
+	$(MAKE) -f CMakeFiles/undistort_rectify.dir/build.make CMakeFiles/undistort_rectify.dir/build
+.PHONY : undistort_rectify/fast
+
+#=============================================================================
+# Target rules for targets named main
+
+# Build rule for target.
+main: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 main
+.PHONY : main
+
+# fast build rule for target.
+main/fast:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
+.PHONY : main/fast
+
+src/Ball.o: src/Ball.cpp.o
+
+.PHONY : src/Ball.o
+
+# target to build an object file
+src/Ball.cpp.o:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/Ball.cpp.o
+	$(MAKE) -f CMakeFiles/undistort_rectify.dir/build.make CMakeFiles/undistort_rectify.dir/src/Ball.cpp.o
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Ball.cpp.o
+.PHONY : src/Ball.cpp.o
+
+src/Ball.i: src/Ball.cpp.i
+
+.PHONY : src/Ball.i
+
+# target to preprocess a source file
+src/Ball.cpp.i:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/Ball.cpp.i
+	$(MAKE) -f CMakeFiles/undistort_rectify.dir/build.make CMakeFiles/undistort_rectify.dir/src/Ball.cpp.i
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Ball.cpp.i
+.PHONY : src/Ball.cpp.i
+
+src/Ball.s: src/Ball.cpp.s
+
+.PHONY : src/Ball.s
+
+# target to generate assembly for a file
+src/Ball.cpp.s:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/Ball.cpp.s
+	$(MAKE) -f CMakeFiles/undistort_rectify.dir/build.make CMakeFiles/undistort_rectify.dir/src/Ball.cpp.s
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Ball.cpp.s
+.PHONY : src/Ball.cpp.s
+
+src/StereoMatching.o: src/StereoMatching.cpp.o
+
+.PHONY : src/StereoMatching.o
+
+# target to build an object file
+src/StereoMatching.cpp.o:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/StereoMatching.cpp.o
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/StereoMatching.cpp.o
+.PHONY : src/StereoMatching.cpp.o
+
+src/StereoMatching.i: src/StereoMatching.cpp.i
+
+.PHONY : src/StereoMatching.i
+
+# target to preprocess a source file
+src/StereoMatching.cpp.i:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/StereoMatching.cpp.i
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/StereoMatching.cpp.i
+.PHONY : src/StereoMatching.cpp.i
+
+src/StereoMatching.s: src/StereoMatching.cpp.s
+
+.PHONY : src/StereoMatching.s
+
+# target to generate assembly for a file
+src/StereoMatching.cpp.s:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/StereoMatching.cpp.s
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/StereoMatching.cpp.s
+.PHONY : src/StereoMatching.cpp.s
 
 src/calib_single.o: src/calib_single.cpp.o
 
@@ -229,32 +305,32 @@ src/calib_stereo.cpp.s:
 	$(MAKE) -f CMakeFiles/calibrate_stereo.dir/build.make CMakeFiles/calibrate_stereo.dir/src/calib_stereo.cpp.s
 .PHONY : src/calib_stereo.cpp.s
 
-src/circle_detection.o: src/circle_detection.cpp.o
+src/main.o: src/main.cpp.o
 
-.PHONY : src/circle_detection.o
+.PHONY : src/main.o
 
 # target to build an object file
-src/circle_detection.cpp.o:
-	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/circle_detection.cpp.o
-.PHONY : src/circle_detection.cpp.o
+src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
 
-src/circle_detection.i: src/circle_detection.cpp.i
+src/main.i: src/main.cpp.i
 
-.PHONY : src/circle_detection.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-src/circle_detection.cpp.i:
-	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/circle_detection.cpp.i
-.PHONY : src/circle_detection.cpp.i
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
 
-src/circle_detection.s: src/circle_detection.cpp.s
+src/main.s: src/main.cpp.s
 
-.PHONY : src/circle_detection.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-src/circle_detection.cpp.s:
-	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/circle_detection.cpp.s
-.PHONY : src/circle_detection.cpp.s
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 src/read_images.o: src/read_images.cpp.o
 
@@ -282,6 +358,33 @@ src/read_images.s: src/read_images.cpp.s
 src/read_images.cpp.s:
 	$(MAKE) -f CMakeFiles/read.dir/build.make CMakeFiles/read.dir/src/read_images.cpp.s
 .PHONY : src/read_images.cpp.s
+
+src/stereo_matching.o: src/stereo_matching.cpp.o
+
+.PHONY : src/stereo_matching.o
+
+# target to build an object file
+src/stereo_matching.cpp.o:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/stereo_matching.cpp.o
+.PHONY : src/stereo_matching.cpp.o
+
+src/stereo_matching.i: src/stereo_matching.cpp.i
+
+.PHONY : src/stereo_matching.i
+
+# target to preprocess a source file
+src/stereo_matching.cpp.i:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/stereo_matching.cpp.i
+.PHONY : src/stereo_matching.cpp.i
+
+src/stereo_matching.s: src/stereo_matching.cpp.s
+
+.PHONY : src/stereo_matching.s
+
+# target to generate assembly for a file
+src/stereo_matching.cpp.s:
+	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/stereo_matching.cpp.s
+.PHONY : src/stereo_matching.cpp.s
 
 src/undistort_rectify.o: src/undistort_rectify.cpp.o
 
@@ -317,24 +420,34 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... read"
-	@echo "... undistort_rectify"
-	@echo "... calibrate_stereo"
 	@echo "... rebuild_cache"
+	@echo "... read"
 	@echo "... calibrate"
-	@echo "... detection"
+	@echo "... calibrate_stereo"
+	@echo "... matching"
+	@echo "... undistort_rectify"
+	@echo "... main"
+	@echo "... src/Ball.o"
+	@echo "... src/Ball.i"
+	@echo "... src/Ball.s"
+	@echo "... src/StereoMatching.o"
+	@echo "... src/StereoMatching.i"
+	@echo "... src/StereoMatching.s"
 	@echo "... src/calib_single.o"
 	@echo "... src/calib_single.i"
 	@echo "... src/calib_single.s"
 	@echo "... src/calib_stereo.o"
 	@echo "... src/calib_stereo.i"
 	@echo "... src/calib_stereo.s"
-	@echo "... src/circle_detection.o"
-	@echo "... src/circle_detection.i"
-	@echo "... src/circle_detection.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 	@echo "... src/read_images.o"
 	@echo "... src/read_images.i"
 	@echo "... src/read_images.s"
+	@echo "... src/stereo_matching.o"
+	@echo "... src/stereo_matching.i"
+	@echo "... src/stereo_matching.s"
 	@echo "... src/undistort_rectify.o"
 	@echo "... src/undistort_rectify.i"
 	@echo "... src/undistort_rectify.s"
