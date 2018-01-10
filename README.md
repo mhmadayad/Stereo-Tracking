@@ -26,9 +26,9 @@ Images are saved with prefixes `left` and `right` in the desired directory.
 
 ### Intrinsic calibration of a single camera
 
-./calibrate -w [board_width] -h [board_height] -n [num_imgs] -s [square_size] -d [imgs_directory] -i [imgs_filename] -o [file_extension] -e [output_filename]
+./calibrate -w [board_width] -h [board_height] -n [num_imgs] -s [square_size](in cm) -d [imgs_directory] -i [imgs_filename] -o [file_extension] -e [output_filename]
 
-./calibrate -w 9 -h 6 -n 27 -s 0.02423 -d "../calib_imgs/1/" -i "left" -o "cam_left.yml" -e "jpg"
+./calibrate -w 9 -h 6 -n 27 -s 0.0333 -d "../calib_imgs/1/" -i "left" -o "cam_left.yml" -e "jpg"
 
 
 ### Stereo calibration for extrinisics
