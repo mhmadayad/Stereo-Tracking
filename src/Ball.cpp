@@ -19,8 +19,8 @@
 
 using namespace std;
 
-Ball::Ball(std::string name, double radius, cv::Point2f center)
-      : name(name),radius(radius), center(center){
+Ball::Ball(std::string name, double radius, cv::Point2f center,std::vector<cv::Point> contours)
+      : name(name),radius(radius), center(center),contour(contours){
 }
 
 double Ball::getRadius(){
@@ -34,10 +34,15 @@ std::string Ball::getName(){
 cv::Point2f Ball::getCenter(){
     return center;
 }
+std::vector<cv::Point> Ball::getContour(){
+    return contour;
+}
 
 void Ball::setName(std::string name){
     this->name=name;
 }
+
+
 
 //Balls detection
 std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario){
@@ -71,6 +76,7 @@ std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario
     cv::Mat drawing = cv::Mat::zeros( threshold.size(), CV_8UC3 );
     cv::Mat mask = cv::Mat::zeros( threshold.size(), CV_8UC3 );
     for( int i = 0; i< contours.size(); i++ ){
+        //std::cout << radius[i] << std::endl;
         //find balls between min and max radius
         if((int)radius[i] >minRadius && (int)radius[i]<maxRadius){
             //Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
@@ -81,7 +87,7 @@ std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario
             //draw circles around the balls
             cv::circle( mask, center[i], (int)radius[i], CV_RGB(0,255,0), CV_FILLED, 8, 0 );
             cv::circle( drawing, center[i], (int)radius[i], CV_RGB(0,255,0), 1, 8, 0 );
-            balls.push_back(Ball("ball",radius[i],cv::Point(int(center[i].x),int(center[i].y))));
+            balls.push_back(Ball("ball",radius[i],cv::Point(int(center[i].x),int(center[i].y)),contours[i]));
         }
     }
 
@@ -135,15 +141,36 @@ std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario
 
 //Mark balls (A,B,C) despite the transformation takes place in next frame
 //tracking
+
+int smallest(int x, int y, int z) {
+
+  int smallest = 99999;
+
+  if (x < smallest)
+    smallest=x;
+  if (y < smallest)
+    smallest=y;
+  if(z < smallest)
+    smallest=z;
+
+  return smallest;
+}
+///TODO:: A is always on top (smallest Y)
+/// b and c smalles distance
+/// A to b second smallest distance
 void Ball::markBalls(std::vector<Ball> &balls , cv::Mat &img,int scenario){
     //distances between the balls. i.e-> triangle sides
 
     if(scenario==1 && balls.size()==3){
+
+
         double d1 = cv::norm(balls[0].getCenter()-balls[1].getCenter());
         double d2 = cv::norm(balls[1].getCenter()-balls[2].getCenter());
         double d3 = cv::norm(balls[2].getCenter()-balls[0].getCenter());
 
-        //std::cout << d1 <<"-" <<d2 <<"-"<<d3<<std::endl;
+
+
+        std::cout << d1 <<"-" <<d2 <<"-"<<d3<<std::endl;
         if((distances[0]<= d1 +20 && distances[0]>= d1-20)  && (distances[2]<= d2 +15 && distances[2]>= d2-20)){
             putText(img, "a" , balls[1].getCenter(), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
             balls[1].setName("a");

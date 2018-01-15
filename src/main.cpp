@@ -8,7 +8,7 @@ using namespace std;
 using namespace cv;
 
 ///Save 3D points out of disparity map
-static void saveXYZ(const char* filename, const Mat& mat)
+static void saveXYZ(const char* filename, const Mat& mat , vector<Point2d> centers)
 {
     const double max_z = 1.0e4;
     FILE* fp = fopen(filename, "wt");
@@ -16,10 +16,14 @@ static void saveXYZ(const char* filename, const Mat& mat)
     {
         for(int x = 0; x < mat.cols; x++)
         {
-            Vec3f point = mat.at<Vec3f>(y, x);
+            for(int i=0 ; i<centers.size();i++){
+                if(centers[i].x==x && centers[i].y==y){
+                Vec3f point = mat.at<Vec3f>(y, x);
 
-            if(fabs(point[2] - max_z) < FLT_EPSILON || fabs(point[2]) > max_z) continue;
-            fprintf(fp, "%f %f %f\n", point[0], point[1], point[2]);
+                if(fabs(point[2] - max_z) < FLT_EPSILON || fabs(point[2]) > max_z) continue;
+                fprintf(fp, "%f %f %f\n", point[0], point[1], point[2]);
+                }
+            }
         }
     }
     fclose(fp);
@@ -49,8 +53,8 @@ void reprojectImage3D( InputArray _disparity,
     int x, cols = disparity.cols;
     CV_Assert( cols >= 0 );
 
-    std::vector<float> _sbuf(cols);
-    std::vector<Vec3f> _dbuf(cols);
+    vector<float> _sbuf(cols);
+    vector<Vec3f> _dbuf(cols);
     float* sbuf = &_sbuf[0];
     Vec3f* dbuf = &_dbuf[0];
     double minDisparity = FLT_MAX;
@@ -75,14 +79,19 @@ void reprojectImage3D( InputArray _disparity,
 
         for( x = 0; x < cols; x++)
         {
-            double d = sptr[x];
-            Vec4d homg_pt = _Q*Vec4d(x, y, d, 1.0);
-            dptr[x] = Vec3d(homg_pt.val);
-            dptr[x] /= homg_pt[3];
-            if( fabs(d-minDisparity) <= FLT_EPSILON )
-                dptr[x][2] = bigZ;
+            for(int i = 0 ;i<centers.size(); i++)
+            {
+                if(centers[i].x==x && centers[i].y==y){
+                    cout << "x:"<<centers[i].x << "y:"<<centers[i].y << endl;
+                    double d = sptr[x];
+                    Vec4d homg_pt = _Q*Vec4d(x, y, d, 1.0);
+                    dptr[x] = Vec3d(homg_pt.val);
+                    dptr[x] /= homg_pt[3];
+                    if( fabs(d-minDisparity) <= FLT_EPSILON )
+                        dptr[x][2] = bigZ;
+                }
             }
-
+        }
     }
 }
 
@@ -97,9 +106,10 @@ void getBallCenters(vector<Ball> b , vector<Point2d> &centers){
 int main( int argc, char** argv )
 {
     int scenario=2; ///1 for three balls , 2 for two balls
-    int algorithm = 1;///1 for stereoBM , 2 for stereoSGBM
+    int algorithm = 1;///1 for stereoBM , 2 for stereoSGBM , 3 for Triangulation
     ///STEREORECTIFY DATA
-    Ball b("balls",0,Point2f(1,1));
+    vector<Point> ayre;
+    Ball b("balls",0,Point2f(1,1),ayre);
     Mat xyz,disp8;
     Mat imgLeft, imgRight, disp_out;
     Mat map11, map12, map21, map22;
@@ -183,8 +193,7 @@ int main( int argc, char** argv )
         remap(imgRight, img2r, map21, map22, INTER_LINEAR);
 
         ///find balls in both frames
-        std::pair<vector<Ball>,Mat> leftB=b.findBalls(imgLeft,scenario);
-        std::pair<vector<Ball>,Mat> rightB=b.findBalls(imgRight,scenario);
+        pair<vector<Ball>,Mat> leftB=b.findBalls(imgLeft,scenario);
         if (algorithm==1 || algorithm==2){
             ///Balls detection and Mask generation
             ///FIXME: use rectified pair
@@ -196,8 +205,8 @@ int main( int argc, char** argv )
             ///SHOW RECTIFIED
             pyrDown(img1r, img1r_small);
             pyrDown(img2r, img2r_small);
-            imshow("rectified left", img1r);
-            imshow("rectified right", img2r);
+            //imshow("rectified left", img1r);
+            //imshow("rectified right", img2r);
 
             ///COMPUTE DISPARITY
             ///TODO :: compute(img1r,img2r);
@@ -220,7 +229,7 @@ int main( int argc, char** argv )
             if(leftB.first.size()>0){
                 getBallCenters(leftB.first,centers);
                 reprojectImage3D(imgDisparity16S, xyz, Q,true,-1,centers);
-                saveXYZ("depth", xyz);
+                saveXYZ("depth", xyz,centers);
             }
             imshow("MASK x DISP",out);
 
@@ -237,13 +246,13 @@ int main( int argc, char** argv )
             namedWindow( "Disparity ColoredMap", WINDOW_NORMAL );
             imshow( "Disparity ColoredMap", imgDisparity8U );
             centers.clear();
+
         }
 
 
         ///triangulatePoints
         else{
-
-
+            pair<vector<Ball>,Mat> rightB=b.findBalls(imgRight,scenario);
             if(scenario==1){
 
                 if(leftB.first.size()==3 && rightB.first.size()==3){
@@ -278,13 +287,193 @@ int main( int argc, char** argv )
          t = getTickCount() - t;
 
     }
-
     destroyAllWindows();
-    return 0;
+
+    return EXIT_SUCCESS;
 }
 
 
+int KalmanTracking()// main( int argc, char** argv )
+{
+    // Camera frame
+    cv::Mat frame;
+    vector<Point> ayre;
+    Ball b("balls",0,Point2f(1,1),ayre);
 
+    // >>>> Kalman Filter
+    int stateSize = 6;
+    int measSize = 4;
+    int contrSize = 0;
+
+    unsigned int type = CV_32F;
+    cv::KalmanFilter kf(stateSize, measSize, contrSize, type);
+
+    cv::Mat state(stateSize, 1, type);  // [x,y,v_x,v_y,w,h]
+    cv::Mat meas(measSize, 1, type);    // [z_x,z_y,z_w,z_h]
+    cv::setIdentity(kf.transitionMatrix);
+    kf.measurementMatrix = cv::Mat::zeros(measSize, stateSize, type);
+    kf.measurementMatrix.at<float>(0) = 1.0f;
+    kf.measurementMatrix.at<float>(7) = 1.0f;
+    kf.measurementMatrix.at<float>(16) = 1.0f;
+    kf.measurementMatrix.at<float>(23) = 1.0f;
+    kf.processNoiseCov.at<float>(0) = 1e-2;
+    kf.processNoiseCov.at<float>(7) = 1e-2;
+    kf.processNoiseCov.at<float>(14) = 5.0f;
+    kf.processNoiseCov.at<float>(21) = 5.0f;
+    kf.processNoiseCov.at<float>(28) = 1e-2;
+    kf.processNoiseCov.at<float>(35) = 1e-2;
+    cv::setIdentity(kf.measurementNoiseCov, cv::Scalar(1e-1));
+    int idx = 0;
+    cv::VideoCapture cap;
+    if (!cap.open(idx)){
+        cout << "Webcam not connected.\n";
+        return EXIT_FAILURE;
+    }
+    cout << "\nHit 'q' to exit...\n";
+    char ch = 0;
+
+    double ticks = 0;
+    bool found = false;
+
+    int notFoundCount = 0;
+    while (ch != 'q' && ch != 'Q')
+    {
+        double precTick = ticks;
+        ticks = (double) cv::getTickCount();
+
+        double dT = (ticks - precTick) / cv::getTickFrequency(); //seconds
+
+        cap >> frame;
+        cout << frame.size() <<endl;
+        cv::Mat res;
+        frame.copyTo( res );
+        cvtColor(frame,frame,CV_BGR2GRAY);
+
+        pair<vector<Ball>,Mat> biz=b.findBalls(frame,2);
+        cout <<"bizza"<<endl;
+
+        if (found)
+        {
+            kf.transitionMatrix.at<float>(2) = dT;
+            kf.transitionMatrix.at<float>(9) = dT;
+
+            cout << "dT:" << endl << dT << endl;
+
+            state = kf.predict();
+            cout << "State post:" << endl << state << endl;
+
+            cv::Rect predRect;
+            predRect.width = state.at<float>(4);
+            predRect.height = state.at<float>(5);
+            predRect.x = state.at<float>(0) - predRect.width / 2;
+            predRect.y = state.at<float>(1) - predRect.height / 2;
+
+            cv::Point center;
+            center.x = state.at<float>(0);
+            center.y = state.at<float>(1);
+            cv::circle(res, center, 2, CV_RGB(255,0,0), -1);
+
+            cv::rectangle(res, predRect, CV_RGB(255,0,0), 2);
+        }
+
+        vector<vector<cv::Point> > balls;
+        vector<cv::Rect> ballsBox;
+        for (size_t i = 0; i < biz.first.size(); i++)
+        {
+            cv::Rect bBox;
+            bBox = cv::boundingRect(biz.first[i].getContour());
+
+//            float ratio = (float) bBox.width / (float) bBox.height;
+//            if (ratio > 1.0f)
+//                ratio = 1.0f / ratio;
+
+//            // Searching for a bBox almost square
+//            if (ratio > 0.75 && bBox.area() >= 400)
+//            {
+                balls.push_back(biz.first[i].getContour());
+                ballsBox.push_back(bBox);
+//            }
+                break;
+        }
+
+        cout << "Balls found:" << ballsBox.size() << endl;
+
+        // >>>>> Detection result
+        for (size_t i = 0; i < balls.size(); i++)
+        {
+            cv::drawContours(res, balls, i, CV_RGB(20,150,20), 1);
+            cv::rectangle(res, ballsBox[i], CV_RGB(0,255,0), 2);
+
+            cv::Point center;
+            center.x = ballsBox[i].x + ballsBox[i].width / 2;
+            center.y = ballsBox[i].y + ballsBox[i].height / 2;
+            cv::circle(res, center, 2, CV_RGB(20,150,20), -1);
+
+            stringstream sstr;
+            sstr << "(" << center.x << "," << center.y << ")";
+            cv::putText(res, sstr.str(),
+                        cv::Point(center.x + 3, center.y - 3),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(20,150,20), 2);
+        }
+
+
+        //  Kalman Update
+        if (balls.size() == 0)
+        {
+            notFoundCount++;
+            cout << "notFoundCount:" << notFoundCount << endl;
+            if( notFoundCount >= 100 )
+            {
+                found = false;
+            }
+            /*else
+                kf.statePost = state;*/
+        }
+        else
+        {
+            notFoundCount = 0;
+
+            meas.at<float>(0) = ballsBox[0].x + ballsBox[0].width / 2;
+            meas.at<float>(1) = ballsBox[0].y + ballsBox[0].height / 2;
+            meas.at<float>(2) = (float)ballsBox[0].width;
+            meas.at<float>(3) = (float)ballsBox[0].height;
+
+            if (!found) // First detection!
+            {
+                //  Initialization
+                kf.errorCovPre.at<float>(0) = 1; // px
+                kf.errorCovPre.at<float>(7) = 1; // px
+                kf.errorCovPre.at<float>(14) = 1;
+                kf.errorCovPre.at<float>(21) = 1;
+                kf.errorCovPre.at<float>(28) = 1; // px
+                kf.errorCovPre.at<float>(35) = 1; // px
+
+                state.at<float>(0) = meas.at<float>(0);
+                state.at<float>(1) = meas.at<float>(1);
+                state.at<float>(2) = 0;
+                state.at<float>(3) = 0;
+                state.at<float>(4) = meas.at<float>(2);
+                state.at<float>(5) = meas.at<float>(3);
+
+
+                kf.statePost = state;
+
+                found = true;
+            }
+            else
+                kf.correct(meas); // Kalman Correction
+
+            cout << "Measure matrix:" << endl << meas << endl;
+        }
+
+        // Final result
+        cv::imshow("Tracking", res);
+
+        ch = cv::waitKey(1);
+    }
+
+    return EXIT_SUCCESS;
+}
 
 
 

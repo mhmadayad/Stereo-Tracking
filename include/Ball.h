@@ -10,8 +10,9 @@ public:
      *  name is for tracking purpose since we have three similar balls
      */
 
-    Ball(std::string name,double radius,cv::Point2f center);
+    Ball(std::string name,double radius,cv::Point2f center, std::vector<cv::Point> contours);
     std::string getName();
+    std::vector<cv::Point> getContour();
     double getRadius();
     cv::Point2f getCenter();
     void setName(std::string name);
@@ -24,5 +25,6 @@ private:
     std::string name;
     double radius;
     cv::Point2f center;
+    std::vector<cv::Point> contour;
     int scenario=1;//1 i.e. 3 balls , 2 i.e. 2 balls
 };
