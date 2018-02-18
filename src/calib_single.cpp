@@ -77,7 +77,7 @@ double computeReprojectionErrors(const vector< vector< Point3f > >& objectPoints
 int main(int argc, char const **argv)
 {
   int board_width, board_height, num_imgs;
-  float square_size;
+  float square_size=0.07;
   char* imgs_directory;
   char* imgs_filename;
   char* out_file;
@@ -87,7 +87,6 @@ int main(int argc, char const **argv)
     { "board_width",'w',POPT_ARG_INT,&board_width,0,"Checkerboard width","NUM" },
     { "board_height",'h',POPT_ARG_INT,&board_height,0,"Checkerboard height","NUM" },
     { "num_imgs",'n',POPT_ARG_INT,&num_imgs,0,"Number of checkerboard images","NUM" },
-    { "square_size",'s',POPT_ARG_FLOAT,&square_size,0,"Size of checkerboard square","NUM" },
     { "imgs_directory",'d',POPT_ARG_STRING,&imgs_directory,0,"Directory containing images","STR" },
     { "imgs_filename",'i',POPT_ARG_STRING,&imgs_filename,0,"Image filename","STR" },
     { "extension",'e',POPT_ARG_STRING,&extension,0,"Image extension","STR" },

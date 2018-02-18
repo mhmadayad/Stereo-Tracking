@@ -77,6 +77,46 @@
             <DistClean command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 clean" />
          </MakeCommands>
       </Target>
+      <Target title="detection">
+         <Option output="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/detection" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking" />
+            <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/$(OpenCV_INCLUDE_DIRS)" />
+            <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include" />
+            <Add directory="/usr/local/include" />
+            <Add directory="/usr/local/include/opencv" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 detection" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="detection/fast">
+         <Option output="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/detection" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking" />
+            <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/$(OpenCV_INCLUDE_DIRS)" />
+            <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include" />
+            <Add directory="/usr/local/include" />
+            <Add directory="/usr/local/include/opencv" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 detection/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
       <Target title="calibrate">
          <Option output="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/calibrate" prefix_auto="0" extension_auto="0" />
          <Option working_dir="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking" />
@@ -247,6 +287,7 @@
             <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking" />
             <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/$(OpenCV_INCLUDE_DIRS)" />
             <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include" />
+            <Add directory="/usr/include/python2.7" />
             <Add directory="/usr/local/include" />
             <Add directory="/usr/local/include/opencv" />
          </Compiler>
@@ -267,6 +308,7 @@
             <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking" />
             <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/$(OpenCV_INCLUDE_DIRS)" />
             <Add directory="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include" />
+            <Add directory="/usr/include/python2.7" />
             <Add directory="/usr/local/include" />
             <Add directory="/usr/local/include/opencv" />
          </Compiler>
@@ -279,28 +321,45 @@
       </Target>
       </Build>
       <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include/Ball.h">
+         <Option target="detection"/>
          <Option target="calibrate_stereo"/>
          <Option target="matching"/>
          <Option target="undistort_rectify"/>
          <Option target="main"/>
       </Unit>
       <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include/Constants.h">
+         <Option target="detection"/>
          <Option target="matching"/>
          <Option target="main"/>
       </Unit>
+      <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include/LED.h">
+         <Option target="main"/>
+      </Unit>
       <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include/StereoMatching.h">
+         <Option target="detection"/>
          <Option target="matching"/>
+         <Option target="main"/>
+      </Unit>
+      <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include/matplotlibcpp.h">
          <Option target="main"/>
       </Unit>
       <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include/popt_pp.h">
          <Option target="calibrate"/>
       </Unit>
       <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/Ball.cpp">
+         <Option target="detection"/>
          <Option target="matching"/>
          <Option target="undistort_rectify"/>
          <Option target="main"/>
       </Unit>
+      <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LED.cpp">
+         <Option target="main"/>
+      </Unit>
+      <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LEDDetection.cpp">
+         <Option target="detection"/>
+      </Unit>
       <Unit filename="/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/StereoMatching.cpp">
+         <Option target="detection"/>
          <Option target="matching"/>
          <Option target="main"/>
       </Unit>

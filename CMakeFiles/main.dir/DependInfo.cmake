@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/Ball.cpp" "/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles/main.dir/src/Ball.cpp.o"
+  "/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LED.cpp" "/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles/main.dir/src/LED.cpp.o"
   "/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/StereoMatching.cpp" "/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles/main.dir/src/StereoMatching.cpp.o"
   "/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/main.cpp" "/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles/main.dir/src/main.cpp.o"
   )
@@ -15,6 +16,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "."
   "$(OpenCV_INCLUDE_DIRS)"
   "include"
+  "/usr/include/python2.7"
   "/usr/local/include"
   "/usr/local/include/opencv"
   )

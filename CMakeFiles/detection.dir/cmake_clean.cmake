@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/detection.dir/src/circle_detection.cpp.o"
+  "CMakeFiles/detection.dir/src/LEDDetection.cpp.o"
   "CMakeFiles/detection.dir/src/Ball.cpp.o"
+  "CMakeFiles/detection.dir/src/StereoMatching.cpp.o"
   "detection.pdb"
   "detection"
 )

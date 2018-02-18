@@ -1,4 +1,4 @@
-#include "Ball.h"
+#include "LED.h"
 #include "Constants.h"
 #include <ostream>
 #include <vector>
@@ -19,34 +19,34 @@
 
 using namespace std;
 
-Ball::Ball(std::string name, double radius, cv::Point2f center,std::vector<cv::Point> contours)
+LED::LED(std::string name, double radius, cv::Point2f center,std::vector<cv::Point> contours)
       : name(name),radius(radius), center(center),contour(contours){
 }
 
-double Ball::getRadius(){
+double LED::getRadius(){
     return radius;
 }
 
-std::string Ball::getName(){
+std::string LED::getName(){
     return name;
 }
 
-cv::Point2f Ball::getCenter(){
+cv::Point2f LED::getCenter(){
     return center;
 }
-std::vector<cv::Point> Ball::getContour(){
+std::vector<cv::Point> LED::getContour(){
     return contour;
 }
 
-void Ball::setName(std::string name){
+void LED::setName(std::string name){
     this->name=name;
 }
 
 
 
-//Balls detection
-std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario){
-    std::vector<Ball> balls;
+//LEDs detection
+std::vector<LED> LED::findLEDs(cv::Mat frame, int scenario,int num){
+    std::vector<LED> LEDs;
     cv::Mat grayImage , threshold;
     //cv::cvtColor( frame, grayImage, CV_BGR2GRAY );
     ///fix me
@@ -54,8 +54,12 @@ std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario
     std::vector<std::vector<cv::Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
     // Detect edges using Threshold
-    cv::threshold( grayImage, threshold, 10, 255, cv::THRESH_BINARY );
+    cv::threshold( grayImage, threshold, 50, 255,0 );//cv::THRESH_BINARY );
     // Find contours
+    if(num==1)
+        cv::imshow("thresholdL",threshold);
+    else
+        cv::imshow("threhsoldR",threshold);
     cv::findContours( threshold, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
 
     // Approximate contours to polygons + get bounding rects and circles
@@ -76,7 +80,7 @@ std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario
     cv::Mat drawing = cv::Mat::zeros( threshold.size(), CV_8UC3 );
     cv::Mat mask = cv::Mat::zeros( threshold.size(), CV_8UC3 );
     for( int i = 0; i< contours.size(); i++ ){
-        std::cout << radius[i] << std::endl;
+        //std::cout << radius[i] << std::endl;
         //find balls between min and max radius
         if((int)radius[i] >minRadius && (int)radius[i]<maxRadius){
             //Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
@@ -87,55 +91,58 @@ std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario
             //draw circles around the balls
             cv::circle( mask, center[i], 10, CV_RGB(0,255,0), CV_FILLED, 8, 0 );
             cv::circle( drawing, center[i], 10, CV_RGB(0,255,0), 1, 8, 0 );
-            balls.push_back(Ball("ball",radius[i],cv::Point(int(center[i].x),int(center[i].y)),contours[i]));
+            LEDs.push_back(LED("LED",radius[i],cv::Point(int(center[i].x),int(center[i].y)),contours[i]));
         }
     }
 
     if(scenario==1){
-         if(balls.size()== 3){
+         if(LEDs.size()== 3){
         //draw the triangle
-            markBalls(balls,drawing, scenario);
-            //triange from the centers of three balls
-            cv::line(drawing, balls[0].getCenter(), balls[1].getCenter(), CV_RGB(255,0,0),2);
-            cv::line(drawing, balls[1].getCenter(), balls[2].getCenter(), CV_RGB(255,0,0),2);
-            cv::line(drawing, balls[2].getCenter(), balls[0].getCenter(), CV_RGB(255,0,0),2);
+            markLEDs(LEDs,drawing, scenario);
+            //triange from the centers of three LEDs
+            cv::line(drawing, LEDs[0].getCenter(), LEDs[1].getCenter(), CV_RGB(255,0,0),2);
+            cv::line(drawing, LEDs[1].getCenter(), LEDs[2].getCenter(), CV_RGB(255,0,0),2);
+            cv::line(drawing, LEDs[2].getCenter(), LEDs[0].getCenter(), CV_RGB(255,0,0),2);
             //markCircles(centers,drawing);
 
             //center of triangle
-            int posX=( balls[0].getCenter().x + balls[1].getCenter().x +  balls[2].getCenter().x )/3;
-            int posY=(  balls[0].getCenter().y +  balls[1].getCenter().y + balls[2].getCenter().y )/3;
+            int posX=( LEDs[0].getCenter().x + LEDs[1].getCenter().x +  LEDs[2].getCenter().x )/3;
+            int posY=( LEDs[0].getCenter().y + LEDs[1].getCenter().y +  LEDs[2].getCenter().y )/3;
             cv::putText(drawing, "center", cv::Point(posX,posY), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
 
         }
-        else if(balls.size()>3)
+        else if(LEDs.size()>3)
             std::cout << "noise-> detected more than 3 balls" <<std::endl;
         else
-            std::cout <<balls.size() << " balls detected" << std::endl;
+            std::cout <<LEDs.size() << " balls detected" << std::endl;
     }
 
-    else if(scenario==2){
-        if(balls.size()== 2){
-            //draw the triangle
-            markBalls(balls,drawing,scenario);
-            //triange from the centers of three balls
-            cv::line(drawing, balls[0].getCenter(), balls[1].getCenter(), CV_RGB(255,0,0),2);
-            //markCircles(centers,drawing);
-        }
+//    else if(scenario==2){
+//        if(balls.size()== 2){
+//            //draw the triangle
+//            markBalls(balls,drawing,scenario);
+//            //triange from the centers of three balls
+//            cv::line(drawing, balls[0].getCenter(), balls[1].getCenter(), CV_RGB(255,0,0),2);
+//            //markCircles(centers,drawing);
+//        }
 
-        else if(balls.size()>2)
-            std::cout << "noise-> detected more than 3 balls" <<std::endl;
-        else
-            std::cout <<balls.size() << " detected" << std::endl;
-    }
+//        else if(balls.size()>2)
+//            std::cout << "noise-> detected more than 3 balls" <<std::endl;
+//        else
+//            std::cout <<balls.size() << " detected" << std::endl;
+//    }
 
     // Show in a window
-    cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-    cv::imshow( "Contours", drawing );
+    if(num==1)
+        cv::imshow( "ContoursL", drawing );
+    else
+        cv::imshow( "ContoursR", drawing );
+    //cv::imshow( "Contours", drawing );
     cv::cvtColor( mask, mask, CV_BGR2GRAY );
     mask.convertTo(mask,CV_8U);
 
-    cv::imshow( "mask", mask );
-    return std::make_pair(balls,mask);
+    //cv::imshow( "mask", mask );
+    return LEDs;
     //return balls;
 }
 
@@ -143,15 +150,14 @@ std::pair<std::vector<Ball>,cv::Mat> Ball::findBalls(cv::Mat frame, int scenario
 //tracking
 
 
-std::vector<int> getBallsRelPos(std::vector<Ball> &balls){
+void getLEDsRelPos(std::vector<LED> &LEDs){
 
     int posA=0;
     int posB=0;
     int posC=0;
-    std::vector<int> pos(3);
-    cv::Point c1=balls[0].getCenter();
-    cv::Point c2=balls[1].getCenter();
-    cv::Point c3=balls[2].getCenter();
+    cv::Point c1=LEDs[0].getCenter();
+    cv::Point c2=LEDs[1].getCenter();
+    cv::Point c3=LEDs[2].getCenter();
 
     if(c1.y<c2.y && c1.y<c3.y){
         posA=0;
@@ -194,44 +200,40 @@ std::vector<int> getBallsRelPos(std::vector<Ball> &balls){
             //std::swap(balls[0],balls[2]);
         }
     }
-    pos.push_back(posA);
-    pos.push_back(posB);
-    pos.push_back(posC);
+//    pos.push_back(posA);
+//    pos.push_back(posB);
+//    pos.push_back(posC);
 
-    return pos;
+    LEDs[posA].setName("a");
+    LEDs[posB].setName("b");
+    LEDs[posC].setName("c");
 
 }
 
 ///TODO:: A is always on top (smallest Y)
 /// b and c smalles distance
 /// A to b second smallest distance
-void Ball::markBalls(std::vector<Ball> &balls , cv::Mat &img,int scenario){
+void LED::markLEDs(std::vector<LED> &LEDs , cv::Mat &img,int scenario){
     //distances between the balls. i.e-> triangle sides
 
-    if(scenario==1 && balls.size()==3){
+    if(scenario==1 && LEDs.size()==3){
 
 
-        double d1 = cv::norm(balls[0].getCenter()-balls[1].getCenter());
-        double d2 = cv::norm(balls[1].getCenter()-balls[2].getCenter());
-        double d3 = cv::norm(balls[2].getCenter()-balls[0].getCenter());
+//        double d1 = cv::norm(LEDs[0].getCenter()-LEDs[1].getCenter());
+//        double d2 = cv::norm(LEDs[1].getCenter()-LEDs[2].getCenter());
+//        double d3 = cv::norm(LEDs[2].getCenter()-LEDs[0].getCenter());
 
 
 
-        std::cout << d1 <<"-" <<d2 <<"-"<<d3<<std::endl;
+//        std::cout << d1 <<"-" <<d2 <<"-"<<d3<<std::endl;
 
-        cv::Point c1=balls[0].getCenter();
-        cv::Point c2=balls[1].getCenter();
-        cv::Point c3=balls[2].getCenter();
-        std::vector<int> ballsPos=getBallsRelPos(balls);
-        balls[ballsPos[0]].setName("a");
-        putText(img, "a" ,balls[ballsPos[0]].getCenter(), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
-        balls[ballsPos[1]].setName("b");
-        putText(img, "b" ,balls[ballsPos[1]].getCenter(), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
-        balls[ballsPos[2]].setName("c");
-        putText(img, "c" ,balls[ballsPos[2]].getCenter(), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
-        std::cout<<"b1 name= "<<balls[ballsPos[0]].getName() << std::endl;
-        std::cout<<"b2 name= "<<balls[ballsPos[1]].getName() << std::endl;
-        std::cout<<"b3 name= "<<balls[ballsPos[2]].getName() << std::endl;
+        cv::Point c1=LEDs[0].getCenter();
+        cv::Point c2=LEDs[1].getCenter();
+        cv::Point c3=LEDs[2].getCenter();
+        getLEDsRelPos(LEDs);
+        putText(img, LEDs[0].getName() ,LEDs[0].getCenter(), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
+        putText(img, LEDs[1].getName() ,LEDs[1].getCenter(), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
+        putText(img, LEDs[2].getName() ,LEDs[2].getCenter(), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
 
 //        if((distances[0]<= d1 +20 && distances[0]>= d1-20)  && (distances[2]<= d2 +15 && distances[2]>= d2-20)){
 //            putText(img, "a" , balls[1].getCenter(), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
@@ -334,25 +336,25 @@ void Ball::markBalls(std::vector<Ball> &balls , cv::Mat &img,int scenario){
 
     }
 
-    else if(scenario==2 && balls.size()==2){
+//    else if(scenario==2 && balls.size()==2){
 
-        cv::Point c1=balls[0].getCenter();
-        cv::Point c2=balls[1].getCenter();
-        if(c1.y < c2.y){
-            putText(img, "a" , cv::Point(c1.x+5,c1.y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
-            balls[0].setName("a");
-            putText(img, "b" , cv::Point(c2.x+5,c2.y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
-            balls[1].setName("b");
-        }
-        else{
-            putText(img, "b" , cv::Point(c1.x+5,c1.y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
-            balls[0].setName("b");
-            putText(img, "a" , cv::Point(c2.x+5,c2.y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
-            balls[1].setName("a");
-            std::swap(balls[0],balls[1]);
+//        cv::Point c1=balls[0].getCenter();
+//        cv::Point c2=balls[1].getCenter();
+//        if(c1.y < c2.y){
+//            putText(img, "a" , cv::Point(c1.x+5,c1.y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
+//            balls[0].setName("a");
+//            putText(img, "b" , cv::Point(c2.x+5,c2.y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
+//            balls[1].setName("b");
+//        }
+//        else{
+//            putText(img, "b" , cv::Point(c1.x+5,c1.y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
+//            balls[0].setName("b");
+//            putText(img, "a" , cv::Point(c2.x+5,c2.y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 1.0);
+//            balls[1].setName("a");
+//            std::swap(balls[0],balls[1]);
 
-        }
-    }
+//        }
+//    }
 }
 
 

@@ -152,6 +152,15 @@ OpenCV_DIR:PATH=/usr/local/share/OpenCV
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
+//Path to a file.
+PYTHON_INCLUDE_DIR:PATH=/usr/include/python2.7
+
+//Path to a library.
+PYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython2.7.so
+
+//Path to a library.
+PYTHON_LIBRARY_DEBUG:FILEPATH=PYTHON_LIBRARY_DEBUG-NOTFOUND
+
 //No help, variable specified on the command line.
 QT_QMAKE_EXECUTABLE:STRING=/home/moh/Qt5.7.0/5.7/gcc_64/bin/qmake
 
@@ -285,6 +294,8 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 FIND_PACKAGE_MESSAGE_DETAILS_OpenCV:INTERNAL=[/usr/local][v3.3.0(3.3.0)]
 //Details about finding PkgConfig
 FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/bin/pkg-config][v0.29.1()]
+//Details about finding PythonLibs
+FIND_PACKAGE_MESSAGE_DETAILS_PythonLibs:INTERNAL=[/usr/lib/x86_64-linux-gnu/libpython2.7.so][/usr/include/python2.7][v2.7.12(2.7)]
 GTK3_CFLAGS:INTERNAL=-pthread;-I/usr/include/gtk-3.0;-I/usr/include/at-spi2-atk/2.0;-I/usr/include/at-spi-2.0;-I/usr/include/dbus-1.0;-I/usr/lib/x86_64-linux-gnu/dbus-1.0/include;-I/usr/include/gtk-3.0;-I/usr/include/gio-unix-2.0/;-I/usr/include/mirclient;-I/usr/include/mircore;-I/usr/include/mircookie;-I/usr/include/cairo;-I/usr/include/pango-1.0;-I/usr/include/harfbuzz;-I/usr/include/pango-1.0;-I/usr/include/atk-1.0;-I/usr/include/cairo;-I/usr/include/pixman-1;-I/usr/include/freetype2;-I/usr/include/libpng12;-I/usr/include/gdk-pixbuf-2.0;-I/usr/include/libpng12;-I/usr/include/glib-2.0;-I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 GTK3_CFLAGS_I:INTERNAL=
 GTK3_CFLAGS_OTHER:INTERNAL=-pthread
@@ -321,6 +332,12 @@ GTK3_gtk+-3.0_PREFIX:INTERNAL=
 GTK3_gtk+-3.0_VERSION:INTERNAL=
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PYTHON_INCLUDE_DIR
+PYTHON_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PYTHON_LIBRARY
+PYTHON_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PYTHON_LIBRARY_DEBUG
+PYTHON_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 __pkg_config_checked_GTK3:INTERNAL=1
 prefix_result:INTERNAL=/usr/lib/x86_64-linux-gnu
 

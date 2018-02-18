@@ -16,6 +16,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/local/share/OpenCV/OpenCVModules.cmake"
   "/usr/share/cmake-3.5/Modules/CMakeCXXInformation.cmake"
   "/usr/share/cmake-3.5/Modules/CMakeCommonLanguageInclude.cmake"
+  "/usr/share/cmake-3.5/Modules/CMakeFindFrameworks.cmake"
   "/usr/share/cmake-3.5/Modules/CMakeGenericSystem.cmake"
   "/usr/share/cmake-3.5/Modules/CMakeLanguageInformation.cmake"
   "/usr/share/cmake-3.5/Modules/CMakeParseArguments.cmake"
@@ -25,10 +26,12 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-3.5/Modules/Compiler/GNU.cmake"
   "/usr/share/cmake-3.5/Modules/FindPackageHandleStandardArgs.cmake"
   "/usr/share/cmake-3.5/Modules/FindPackageMessage.cmake"
+  "/usr/share/cmake-3.5/Modules/FindPythonLibs.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/Linux-GNU-CXX.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/Linux-GNU.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/Linux.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/UnixPaths.cmake"
+  "/usr/share/cmake-3.5/Modules/SelectLibraryConfigurations.cmake"
   )
 
 # The corresponding makefile is:
@@ -45,6 +48,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/read.dir/DependInfo.cmake"
+  "CMakeFiles/detection.dir/DependInfo.cmake"
   "CMakeFiles/calibrate.dir/DependInfo.cmake"
   "CMakeFiles/calibrate_stereo.dir/DependInfo.cmake"
   "CMakeFiles/matching.dir/DependInfo.cmake"

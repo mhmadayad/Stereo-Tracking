@@ -124,6 +124,19 @@ read/fast:
 .PHONY : read/fast
 
 #=============================================================================
+# Target rules for targets named detection
+
+# Build rule for target.
+detection: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 detection
+.PHONY : detection
+
+# fast build rule for target.
+detection/fast:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/build
+.PHONY : detection/fast
+
+#=============================================================================
 # Target rules for targets named calibrate
 
 # Build rule for target.
@@ -194,6 +207,7 @@ src/Ball.o: src/Ball.cpp.o
 
 # target to build an object file
 src/Ball.cpp.o:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/Ball.cpp.o
 	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/Ball.cpp.o
 	$(MAKE) -f CMakeFiles/undistort_rectify.dir/build.make CMakeFiles/undistort_rectify.dir/src/Ball.cpp.o
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Ball.cpp.o
@@ -205,6 +219,7 @@ src/Ball.i: src/Ball.cpp.i
 
 # target to preprocess a source file
 src/Ball.cpp.i:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/Ball.cpp.i
 	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/Ball.cpp.i
 	$(MAKE) -f CMakeFiles/undistort_rectify.dir/build.make CMakeFiles/undistort_rectify.dir/src/Ball.cpp.i
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Ball.cpp.i
@@ -216,10 +231,65 @@ src/Ball.s: src/Ball.cpp.s
 
 # target to generate assembly for a file
 src/Ball.cpp.s:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/Ball.cpp.s
 	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/Ball.cpp.s
 	$(MAKE) -f CMakeFiles/undistort_rectify.dir/build.make CMakeFiles/undistort_rectify.dir/src/Ball.cpp.s
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Ball.cpp.s
 .PHONY : src/Ball.cpp.s
+
+src/LED.o: src/LED.cpp.o
+
+.PHONY : src/LED.o
+
+# target to build an object file
+src/LED.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/LED.cpp.o
+.PHONY : src/LED.cpp.o
+
+src/LED.i: src/LED.cpp.i
+
+.PHONY : src/LED.i
+
+# target to preprocess a source file
+src/LED.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/LED.cpp.i
+.PHONY : src/LED.cpp.i
+
+src/LED.s: src/LED.cpp.s
+
+.PHONY : src/LED.s
+
+# target to generate assembly for a file
+src/LED.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/LED.cpp.s
+.PHONY : src/LED.cpp.s
+
+src/LEDDetection.o: src/LEDDetection.cpp.o
+
+.PHONY : src/LEDDetection.o
+
+# target to build an object file
+src/LEDDetection.cpp.o:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/LEDDetection.cpp.o
+.PHONY : src/LEDDetection.cpp.o
+
+src/LEDDetection.i: src/LEDDetection.cpp.i
+
+.PHONY : src/LEDDetection.i
+
+# target to preprocess a source file
+src/LEDDetection.cpp.i:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/LEDDetection.cpp.i
+.PHONY : src/LEDDetection.cpp.i
+
+src/LEDDetection.s: src/LEDDetection.cpp.s
+
+.PHONY : src/LEDDetection.s
+
+# target to generate assembly for a file
+src/LEDDetection.cpp.s:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/LEDDetection.cpp.s
+.PHONY : src/LEDDetection.cpp.s
 
 src/StereoMatching.o: src/StereoMatching.cpp.o
 
@@ -227,6 +297,7 @@ src/StereoMatching.o: src/StereoMatching.cpp.o
 
 # target to build an object file
 src/StereoMatching.cpp.o:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/StereoMatching.cpp.o
 	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/StereoMatching.cpp.o
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/StereoMatching.cpp.o
 .PHONY : src/StereoMatching.cpp.o
@@ -237,6 +308,7 @@ src/StereoMatching.i: src/StereoMatching.cpp.i
 
 # target to preprocess a source file
 src/StereoMatching.cpp.i:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/StereoMatching.cpp.i
 	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/StereoMatching.cpp.i
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/StereoMatching.cpp.i
 .PHONY : src/StereoMatching.cpp.i
@@ -247,6 +319,7 @@ src/StereoMatching.s: src/StereoMatching.cpp.s
 
 # target to generate assembly for a file
 src/StereoMatching.cpp.s:
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/StereoMatching.cpp.s
 	$(MAKE) -f CMakeFiles/matching.dir/build.make CMakeFiles/matching.dir/src/StereoMatching.cpp.s
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/StereoMatching.cpp.s
 .PHONY : src/StereoMatching.cpp.s
@@ -422,6 +495,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... read"
+	@echo "... detection"
 	@echo "... calibrate"
 	@echo "... calibrate_stereo"
 	@echo "... matching"
@@ -430,6 +504,12 @@ help:
 	@echo "... src/Ball.o"
 	@echo "... src/Ball.i"
 	@echo "... src/Ball.s"
+	@echo "... src/LED.o"
+	@echo "... src/LED.i"
+	@echo "... src/LED.s"
+	@echo "... src/LEDDetection.o"
+	@echo "... src/LEDDetection.i"
+	@echo "... src/LEDDetection.s"
 	@echo "... src/StereoMatching.o"
 	@echo "... src/StereoMatching.i"
 	@echo "... src/StereoMatching.s"

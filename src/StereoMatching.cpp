@@ -20,7 +20,7 @@ DepthMap::DepthMap(int x ){x=1;}
 
 Mat DepthMap::stereoBM(cv::Mat leftimg , cv::Mat rightimg, cv::Ptr<cv::StereoBM> sbm){
     Mat imgDisparity16S= Mat( leftimg.rows, rightimg.cols, CV_16U );
-
+    sbm->setBlockSize(5);
     sbm->setMinDisparity(0);
     sbm->setTextureThreshold(500);
     sbm->setUniquenessRatio(0);
@@ -57,7 +57,7 @@ Mat DepthMap::stereoSGBM(Mat leftimg, Mat rightimg, Ptr<StereoSGBM> sgbm){
 Mat DepthMap::triangulatePts(vector<Point2d> leftPoints, vector<Point2d> rightPoints , Mat proj1, Mat proj2){
     ///TODO::undistort pts
 
-    Mat pnts3D(1 /*4*/,leftPoints.size(),CV_64F);
+    Mat pnts3D(4 /*4*/,leftPoints.size(),CV_64F);
     triangulatePoints(proj1,proj2,leftPoints,rightPoints,pnts3D);
     return pnts3D;
 }

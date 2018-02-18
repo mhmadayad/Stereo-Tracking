@@ -6,5 +6,5 @@ CXX_FLAGS = -g   -std=gnu++14
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/moh/Desktop/Thesis/Task1/Stereo-Tracking -I/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/$(OpenCV_INCLUDE_DIRS) -I/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include -isystem /usr/local/include -isystem /usr/local/include/opencv 
+CXX_INCLUDES = -I/home/moh/Desktop/Thesis/Task1/Stereo-Tracking -I/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/$(OpenCV_INCLUDE_DIRS) -I/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/include -I/usr/include/python2.7 -isystem /usr/local/include -isystem /usr/local/include/opencv 
 

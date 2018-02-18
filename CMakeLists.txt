@@ -10,6 +10,8 @@ find_package(OpenCV 3.3.0 REQUIRED)
 include_directories($(OpenCV_INCLUDE_DIRS))
 include_directories(include)
 
+find_package(PythonLibs 2.7)
+
 add_executable(calibrate src/calib_single.cpp include/popt_pp.h)
 target_link_libraries(calibrate ${OpenCV_LIBS} "-lpopt")
 
@@ -20,11 +22,16 @@ add_executable(calibrate_stereo src/calib_stereo.cpp include/Ball.h )
 target_link_libraries(calibrate_stereo ${OpenCV_LIBS} ${GTK3_LIBRARIES} "-lpopt")
 
 add_executable(undistort_rectify src/undistort_rectify.cpp src/Ball.cpp include/Ball.h)
-target_link_libraries(undistort_rectify ${OpenCV_LIBS} ${GTK3_LIBRARIES} "-lpopt")
+target_link_libraries(undistort_rectify ${OpenCV_LIBS}  "-lpopt")
 
-add_executable(main src/main.cpp src/Ball.cpp include/Constants.h include/Ball.h src/StereoMatching.cpp include/StereoMatching.h)
-target_link_libraries(main ${OpenCV_LIBS} ${GTK3_LIBRARIES} "-lpopt")
+add_executable(main src/main.cpp src/LED.cpp include/LED.h src/Ball.cpp include/matplotlibcpp.h include/Constants.h include/Ball.h src/StereoMatching.cpp include/StereoMatching.h)
+target_include_directories(main PRIVATE ${PYTHON_INCLUDE_DIRS})
+target_link_libraries(main ${PYTHON_LIBRARIES} ${OpenCV_LIBS} ${GTK3_LIBRARIES} "-lpopt")
 
 add_executable(matching src/stereo_matching.cpp src/Ball.cpp src/StereoMatching.cpp include/Constants.h include/Ball.h include/StereoMatching.h)
 target_link_libraries(matching ${OpenCV_LIBS} ${GTK3_LIBRARIES} "-lpopt")
+
+add_executable(detection src/LEDDetection.cpp src/Ball.cpp src/StereoMatching.cpp include/Constants.h include/Ball.h include/StereoMatching.h)
+target_link_libraries(detection ${OpenCV_LIBS} ${GTK3_LIBRARIES} "-lpopt")
+
 

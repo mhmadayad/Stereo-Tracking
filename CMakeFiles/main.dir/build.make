@@ -81,9 +81,33 @@ CMakeFiles/main.dir/src/main.cpp.o.provides: CMakeFiles/main.dir/src/main.cpp.o.
 CMakeFiles/main.dir/src/main.cpp.o.provides.build: CMakeFiles/main.dir/src/main.cpp.o
 
 
+CMakeFiles/main.dir/src/LED.cpp.o: CMakeFiles/main.dir/flags.make
+CMakeFiles/main.dir/src/LED.cpp.o: src/LED.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/src/LED.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/src/LED.cpp.o -c /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LED.cpp
+
+CMakeFiles/main.dir/src/LED.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/src/LED.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LED.cpp > CMakeFiles/main.dir/src/LED.cpp.i
+
+CMakeFiles/main.dir/src/LED.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/src/LED.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LED.cpp -o CMakeFiles/main.dir/src/LED.cpp.s
+
+CMakeFiles/main.dir/src/LED.cpp.o.requires:
+
+.PHONY : CMakeFiles/main.dir/src/LED.cpp.o.requires
+
+CMakeFiles/main.dir/src/LED.cpp.o.provides: CMakeFiles/main.dir/src/LED.cpp.o.requires
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/LED.cpp.o.provides.build
+.PHONY : CMakeFiles/main.dir/src/LED.cpp.o.provides
+
+CMakeFiles/main.dir/src/LED.cpp.o.provides.build: CMakeFiles/main.dir/src/LED.cpp.o
+
+
 CMakeFiles/main.dir/src/Ball.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/Ball.cpp.o: src/Ball.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/src/Ball.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/src/Ball.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/src/Ball.cpp.o -c /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/Ball.cpp
 
 CMakeFiles/main.dir/src/Ball.cpp.i: cmake_force
@@ -107,7 +131,7 @@ CMakeFiles/main.dir/src/Ball.cpp.o.provides.build: CMakeFiles/main.dir/src/Ball.
 
 CMakeFiles/main.dir/src/StereoMatching.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/StereoMatching.cpp.o: src/StereoMatching.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/src/StereoMatching.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/main.dir/src/StereoMatching.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/src/StereoMatching.cpp.o -c /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/StereoMatching.cpp
 
 CMakeFiles/main.dir/src/StereoMatching.cpp.i: cmake_force
@@ -132,6 +156,7 @@ CMakeFiles/main.dir/src/StereoMatching.cpp.o.provides.build: CMakeFiles/main.dir
 # Object files for target main
 main_OBJECTS = \
 "CMakeFiles/main.dir/src/main.cpp.o" \
+"CMakeFiles/main.dir/src/LED.cpp.o" \
 "CMakeFiles/main.dir/src/Ball.cpp.o" \
 "CMakeFiles/main.dir/src/StereoMatching.cpp.o"
 
@@ -139,9 +164,11 @@ main_OBJECTS = \
 main_EXTERNAL_OBJECTS =
 
 main: CMakeFiles/main.dir/src/main.cpp.o
+main: CMakeFiles/main.dir/src/LED.cpp.o
 main: CMakeFiles/main.dir/src/Ball.cpp.o
 main: CMakeFiles/main.dir/src/StereoMatching.cpp.o
 main: CMakeFiles/main.dir/build.make
+main: /usr/lib/x86_64-linux-gnu/libpython2.7.so
 main: /usr/local/lib/libopencv_stitching.so.3.3.0
 main: /usr/local/lib/libopencv_superres.so.3.3.0
 main: /usr/local/lib/libopencv_videostab.so.3.3.0
@@ -188,7 +215,7 @@ main: /usr/local/lib/libopencv_objdetect.so.3.3.0
 main: /usr/local/lib/libopencv_imgproc.so.3.3.0
 main: /usr/local/lib/libopencv_core.so.3.3.0
 main: CMakeFiles/main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -197,6 +224,7 @@ CMakeFiles/main.dir/build: main
 .PHONY : CMakeFiles/main.dir/build
 
 CMakeFiles/main.dir/requires: CMakeFiles/main.dir/src/main.cpp.o.requires
+CMakeFiles/main.dir/requires: CMakeFiles/main.dir/src/LED.cpp.o.requires
 CMakeFiles/main.dir/requires: CMakeFiles/main.dir/src/Ball.cpp.o.requires
 CMakeFiles/main.dir/requires: CMakeFiles/main.dir/src/StereoMatching.cpp.o.requires
 

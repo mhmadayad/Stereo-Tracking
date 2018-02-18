@@ -57,28 +57,28 @@ include CMakeFiles/detection.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/detection.dir/flags.make
 
-CMakeFiles/detection.dir/src/circle_detection.cpp.o: CMakeFiles/detection.dir/flags.make
-CMakeFiles/detection.dir/src/circle_detection.cpp.o: src/circle_detection.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/detection.dir/src/circle_detection.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/detection.dir/src/circle_detection.cpp.o -c /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/circle_detection.cpp
+CMakeFiles/detection.dir/src/LEDDetection.cpp.o: CMakeFiles/detection.dir/flags.make
+CMakeFiles/detection.dir/src/LEDDetection.cpp.o: src/LEDDetection.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/detection.dir/src/LEDDetection.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/detection.dir/src/LEDDetection.cpp.o -c /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LEDDetection.cpp
 
-CMakeFiles/detection.dir/src/circle_detection.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/detection.dir/src/circle_detection.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/circle_detection.cpp > CMakeFiles/detection.dir/src/circle_detection.cpp.i
+CMakeFiles/detection.dir/src/LEDDetection.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/detection.dir/src/LEDDetection.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LEDDetection.cpp > CMakeFiles/detection.dir/src/LEDDetection.cpp.i
 
-CMakeFiles/detection.dir/src/circle_detection.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/detection.dir/src/circle_detection.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/circle_detection.cpp -o CMakeFiles/detection.dir/src/circle_detection.cpp.s
+CMakeFiles/detection.dir/src/LEDDetection.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/detection.dir/src/LEDDetection.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/LEDDetection.cpp -o CMakeFiles/detection.dir/src/LEDDetection.cpp.s
 
-CMakeFiles/detection.dir/src/circle_detection.cpp.o.requires:
+CMakeFiles/detection.dir/src/LEDDetection.cpp.o.requires:
 
-.PHONY : CMakeFiles/detection.dir/src/circle_detection.cpp.o.requires
+.PHONY : CMakeFiles/detection.dir/src/LEDDetection.cpp.o.requires
 
-CMakeFiles/detection.dir/src/circle_detection.cpp.o.provides: CMakeFiles/detection.dir/src/circle_detection.cpp.o.requires
-	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/circle_detection.cpp.o.provides.build
-.PHONY : CMakeFiles/detection.dir/src/circle_detection.cpp.o.provides
+CMakeFiles/detection.dir/src/LEDDetection.cpp.o.provides: CMakeFiles/detection.dir/src/LEDDetection.cpp.o.requires
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/LEDDetection.cpp.o.provides.build
+.PHONY : CMakeFiles/detection.dir/src/LEDDetection.cpp.o.provides
 
-CMakeFiles/detection.dir/src/circle_detection.cpp.o.provides.build: CMakeFiles/detection.dir/src/circle_detection.cpp.o
+CMakeFiles/detection.dir/src/LEDDetection.cpp.o.provides.build: CMakeFiles/detection.dir/src/LEDDetection.cpp.o
 
 
 CMakeFiles/detection.dir/src/Ball.cpp.o: CMakeFiles/detection.dir/flags.make
@@ -105,64 +105,90 @@ CMakeFiles/detection.dir/src/Ball.cpp.o.provides: CMakeFiles/detection.dir/src/B
 CMakeFiles/detection.dir/src/Ball.cpp.o.provides.build: CMakeFiles/detection.dir/src/Ball.cpp.o
 
 
+CMakeFiles/detection.dir/src/StereoMatching.cpp.o: CMakeFiles/detection.dir/flags.make
+CMakeFiles/detection.dir/src/StereoMatching.cpp.o: src/StereoMatching.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/detection.dir/src/StereoMatching.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/detection.dir/src/StereoMatching.cpp.o -c /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/StereoMatching.cpp
+
+CMakeFiles/detection.dir/src/StereoMatching.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/detection.dir/src/StereoMatching.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/StereoMatching.cpp > CMakeFiles/detection.dir/src/StereoMatching.cpp.i
+
+CMakeFiles/detection.dir/src/StereoMatching.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/detection.dir/src/StereoMatching.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/moh/Desktop/Thesis/Task1/Stereo-Tracking/src/StereoMatching.cpp -o CMakeFiles/detection.dir/src/StereoMatching.cpp.s
+
+CMakeFiles/detection.dir/src/StereoMatching.cpp.o.requires:
+
+.PHONY : CMakeFiles/detection.dir/src/StereoMatching.cpp.o.requires
+
+CMakeFiles/detection.dir/src/StereoMatching.cpp.o.provides: CMakeFiles/detection.dir/src/StereoMatching.cpp.o.requires
+	$(MAKE) -f CMakeFiles/detection.dir/build.make CMakeFiles/detection.dir/src/StereoMatching.cpp.o.provides.build
+.PHONY : CMakeFiles/detection.dir/src/StereoMatching.cpp.o.provides
+
+CMakeFiles/detection.dir/src/StereoMatching.cpp.o.provides.build: CMakeFiles/detection.dir/src/StereoMatching.cpp.o
+
+
 # Object files for target detection
 detection_OBJECTS = \
-"CMakeFiles/detection.dir/src/circle_detection.cpp.o" \
-"CMakeFiles/detection.dir/src/Ball.cpp.o"
+"CMakeFiles/detection.dir/src/LEDDetection.cpp.o" \
+"CMakeFiles/detection.dir/src/Ball.cpp.o" \
+"CMakeFiles/detection.dir/src/StereoMatching.cpp.o"
 
 # External object files for target detection
 detection_EXTERNAL_OBJECTS =
 
-detection: CMakeFiles/detection.dir/src/circle_detection.cpp.o
+detection: CMakeFiles/detection.dir/src/LEDDetection.cpp.o
 detection: CMakeFiles/detection.dir/src/Ball.cpp.o
+detection: CMakeFiles/detection.dir/src/StereoMatching.cpp.o
 detection: CMakeFiles/detection.dir/build.make
-detection: /usr/local/lib/libopencv_stitching.so.3.3.1
-detection: /usr/local/lib/libopencv_superres.so.3.3.1
-detection: /usr/local/lib/libopencv_videostab.so.3.3.1
-detection: /usr/local/lib/libopencv_aruco.so.3.3.1
-detection: /usr/local/lib/libopencv_bgsegm.so.3.3.1
-detection: /usr/local/lib/libopencv_bioinspired.so.3.3.1
-detection: /usr/local/lib/libopencv_ccalib.so.3.3.1
-detection: /usr/local/lib/libopencv_dpm.so.3.3.1
-detection: /usr/local/lib/libopencv_face.so.3.3.1
-detection: /usr/local/lib/libopencv_freetype.so.3.3.1
-detection: /usr/local/lib/libopencv_fuzzy.so.3.3.1
-detection: /usr/local/lib/libopencv_hdf.so.3.3.1
-detection: /usr/local/lib/libopencv_img_hash.so.3.3.1
-detection: /usr/local/lib/libopencv_line_descriptor.so.3.3.1
-detection: /usr/local/lib/libopencv_optflow.so.3.3.1
-detection: /usr/local/lib/libopencv_reg.so.3.3.1
-detection: /usr/local/lib/libopencv_rgbd.so.3.3.1
-detection: /usr/local/lib/libopencv_saliency.so.3.3.1
-detection: /usr/local/lib/libopencv_stereo.so.3.3.1
-detection: /usr/local/lib/libopencv_structured_light.so.3.3.1
-detection: /usr/local/lib/libopencv_surface_matching.so.3.3.1
-detection: /usr/local/lib/libopencv_tracking.so.3.3.1
-detection: /usr/local/lib/libopencv_xfeatures2d.so.3.3.1
-detection: /usr/local/lib/libopencv_ximgproc.so.3.3.1
-detection: /usr/local/lib/libopencv_xobjdetect.so.3.3.1
-detection: /usr/local/lib/libopencv_xphoto.so.3.3.1
-detection: /usr/local/lib/libopencv_shape.so.3.3.1
-detection: /usr/local/lib/libopencv_photo.so.3.3.1
-detection: /usr/local/lib/libopencv_datasets.so.3.3.1
-detection: /usr/local/lib/libopencv_plot.so.3.3.1
-detection: /usr/local/lib/libopencv_text.so.3.3.1
-detection: /usr/local/lib/libopencv_dnn.so.3.3.1
-detection: /usr/local/lib/libopencv_ml.so.3.3.1
-detection: /usr/local/lib/libopencv_video.so.3.3.1
-detection: /usr/local/lib/libopencv_calib3d.so.3.3.1
-detection: /usr/local/lib/libopencv_features2d.so.3.3.1
-detection: /usr/local/lib/libopencv_highgui.so.3.3.1
-detection: /usr/local/lib/libopencv_videoio.so.3.3.1
-detection: /usr/local/lib/libopencv_viz.so.3.3.1
-detection: /usr/local/lib/libopencv_phase_unwrapping.so.3.3.1
-detection: /usr/local/lib/libopencv_flann.so.3.3.1
-detection: /usr/local/lib/libopencv_imgcodecs.so.3.3.1
-detection: /usr/local/lib/libopencv_objdetect.so.3.3.1
-detection: /usr/local/lib/libopencv_imgproc.so.3.3.1
-detection: /usr/local/lib/libopencv_core.so.3.3.1
+detection: /usr/local/lib/libopencv_stitching.so.3.3.0
+detection: /usr/local/lib/libopencv_superres.so.3.3.0
+detection: /usr/local/lib/libopencv_videostab.so.3.3.0
+detection: /usr/local/lib/libopencv_aruco.so.3.3.0
+detection: /usr/local/lib/libopencv_bgsegm.so.3.3.0
+detection: /usr/local/lib/libopencv_bioinspired.so.3.3.0
+detection: /usr/local/lib/libopencv_ccalib.so.3.3.0
+detection: /usr/local/lib/libopencv_dpm.so.3.3.0
+detection: /usr/local/lib/libopencv_face.so.3.3.0
+detection: /usr/local/lib/libopencv_freetype.so.3.3.0
+detection: /usr/local/lib/libopencv_fuzzy.so.3.3.0
+detection: /usr/local/lib/libopencv_hdf.so.3.3.0
+detection: /usr/local/lib/libopencv_img_hash.so.3.3.0
+detection: /usr/local/lib/libopencv_line_descriptor.so.3.3.0
+detection: /usr/local/lib/libopencv_optflow.so.3.3.0
+detection: /usr/local/lib/libopencv_reg.so.3.3.0
+detection: /usr/local/lib/libopencv_rgbd.so.3.3.0
+detection: /usr/local/lib/libopencv_saliency.so.3.3.0
+detection: /usr/local/lib/libopencv_stereo.so.3.3.0
+detection: /usr/local/lib/libopencv_structured_light.so.3.3.0
+detection: /usr/local/lib/libopencv_surface_matching.so.3.3.0
+detection: /usr/local/lib/libopencv_tracking.so.3.3.0
+detection: /usr/local/lib/libopencv_xfeatures2d.so.3.3.0
+detection: /usr/local/lib/libopencv_ximgproc.so.3.3.0
+detection: /usr/local/lib/libopencv_xobjdetect.so.3.3.0
+detection: /usr/local/lib/libopencv_xphoto.so.3.3.0
+detection: /usr/local/lib/libopencv_shape.so.3.3.0
+detection: /usr/local/lib/libopencv_photo.so.3.3.0
+detection: /usr/local/lib/libopencv_calib3d.so.3.3.0
+detection: /usr/local/lib/libopencv_viz.so.3.3.0
+detection: /usr/local/lib/libopencv_phase_unwrapping.so.3.3.0
+detection: /usr/local/lib/libopencv_dnn.so.3.3.0
+detection: /usr/local/lib/libopencv_video.so.3.3.0
+detection: /usr/local/lib/libopencv_datasets.so.3.3.0
+detection: /usr/local/lib/libopencv_plot.so.3.3.0
+detection: /usr/local/lib/libopencv_text.so.3.3.0
+detection: /usr/local/lib/libopencv_features2d.so.3.3.0
+detection: /usr/local/lib/libopencv_flann.so.3.3.0
+detection: /usr/local/lib/libopencv_highgui.so.3.3.0
+detection: /usr/local/lib/libopencv_ml.so.3.3.0
+detection: /usr/local/lib/libopencv_videoio.so.3.3.0
+detection: /usr/local/lib/libopencv_imgcodecs.so.3.3.0
+detection: /usr/local/lib/libopencv_objdetect.so.3.3.0
+detection: /usr/local/lib/libopencv_imgproc.so.3.3.0
+detection: /usr/local/lib/libopencv_core.so.3.3.0
 detection: CMakeFiles/detection.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable detection"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/moh/Desktop/Thesis/Task1/Stereo-Tracking/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable detection"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/detection.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -170,8 +196,9 @@ CMakeFiles/detection.dir/build: detection
 
 .PHONY : CMakeFiles/detection.dir/build
 
-CMakeFiles/detection.dir/requires: CMakeFiles/detection.dir/src/circle_detection.cpp.o.requires
+CMakeFiles/detection.dir/requires: CMakeFiles/detection.dir/src/LEDDetection.cpp.o.requires
 CMakeFiles/detection.dir/requires: CMakeFiles/detection.dir/src/Ball.cpp.o.requires
+CMakeFiles/detection.dir/requires: CMakeFiles/detection.dir/src/StereoMatching.cpp.o.requires
 
 .PHONY : CMakeFiles/detection.dir/requires
 

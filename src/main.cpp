@@ -4,9 +4,14 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "Ball.h"
 #include "StereoMatching.h"
+#include "popt_pp.h"
+#include <fstream>
+#include "matplotlibcpp.h"
+#include <string>
+#include "LED.h"
 using namespace std;
 using namespace cv;
-
+namespace plt = matplotlibcpp;
 ///Save 3D points out of disparity map
 static void saveXYZ(const char* filename, const Mat& mat , vector<Point2d> centers)
 {
@@ -22,6 +27,7 @@ static void saveXYZ(const char* filename, const Mat& mat , vector<Point2d> cente
 
                 if(fabs(point[2] - max_z) < FLT_EPSILON || fabs(point[2]) > max_z) continue;
                 fprintf(fp, "%f %f %f\n", point[0], point[1], point[2]);
+                cout <<"("<< point[0] <<"," <<point[1] << "," << point[2] <<")" <<endl;
                 }
             }
         }
@@ -29,8 +35,42 @@ static void saveXYZ(const char* filename, const Mat& mat , vector<Point2d> cente
     fclose(fp);
 }
 
+void testPlot(){
+    int n = 1000;
+        std::vector<double> x, y, z;
+
+        for(int i=0; i<n; i++) {
+            x.push_back(i);
+            y.push_back(i*2);
+            //z.push_back(log(i));
+            string a = "z";
+            string b = "z";
+            if (i % 10 == 0) {
+                // Clear previous plot
+                plt::clf();
+                // Plot line from given x and y data. Color is selected automatically.
+                plt::plot(x, y);
+                plt::subplot(1,1,1);
+                //plt::plot(x,y,std::make_pair(a,b));
+                // Plot a line whose name will show up as "log(x)" in the legend.
+                plt::named_plot("log(x)", x, z);
+
+                // Set x-axis to interval [0,1000000]
+                plt::xlim(0, 1000);
+                plt::ylim(0,2000);
+
+                // Add graph title
+                plt::title("Sample figure");
+                // Enable legend.
+                plt::legend();
+                // Display plot continuously
+                plt::pause(0.0000001);
+            }
+        }
+}
+
 void reprojectImage3D( InputArray _disparity,
-                             OutputArray __3dImage, InputArray _Qmat,
+                            OutputArray __3dImage, InputArray _Qmat,
                              bool handleMissingValues, int dtype,vector<Point2d> centers)
 {
 
@@ -95,7 +135,7 @@ void reprojectImage3D( InputArray _disparity,
     }
 }
 
-void getBallCenters(vector<Ball> b , vector<Point2d> &centers){
+void getLEDsCenters(vector<LED> b , vector<Point2d> &centers){
 
     for(int i=0;i<b.size();i++){
 
@@ -105,11 +145,15 @@ void getBallCenters(vector<Ball> b , vector<Point2d> &centers){
 
 int main( int argc, char** argv )
 {
-    int scenario=2; ///1 for three balls , 2 for two balls
-    int algorithm = 1;///1 for stereoBM , 2 for stereoSGBM , 3 for Triangulation
+    //testPlot();
+    FILE* fp = fopen("testData", "wt");
+    std::ofstream outfile;
+    outfile.open("fiftymicro/test.txt", std::ios_base::app);
+    int scenario=1; ///1 for three balls , 2 for two balls
+    int algorithm = 3;///1 for stereoBM , 2 for stereoSGBM , 3 for Triangulation
     ///STEREORECTIFY DATA
-    vector<Point> ayre;
-    Ball b("balls",0,Point2f(1,1),ayre);
+    vector<Point> cntrs;
+    LED L("led",0,Point2f(1,1),cntrs);
     Mat xyz,disp8;
     Mat imgLeft, imgRight, disp_out;
     Mat map11, map12, map21, map22;
@@ -119,37 +163,42 @@ int main( int argc, char** argv )
     vector<Point2d> srcPts;
     vector<Point2d> dstPts;
     vector<Point2d> centers;
-    vector<Ball> srcBall;
-    vector<Ball> dstBall;
+    vector<LED> srcLEDs;
+    vector<LED> dstLEDs;
     Mat pnts3D;
 
     ///get calibration params
-    string calibration_filename = "cam_stereo.yml";
-    FileStorage fs(calibration_filename, FileStorage::READ);
-    if(!fs.isOpened())
+    string calibration_filenameext = "extrinsics.yml";
+    string calibration_filenameint = "intrinsics.yml";
+
+    FileStorage fsext(calibration_filenameext, FileStorage::READ);
+    FileStorage fsint(calibration_filenameint, FileStorage::READ);
+    if(!fsext.isOpened() || !fsint.isOpened())
     {
-        printf("Failed to open file %s\n", calibration_filename.c_str());
+        //printf("Failed to open file %s\n", calibration_filename.c_str());
         return -1;
     }
 
     Mat M1, D1, M2, D2,R, T, R1, P1, R2, P2, Q;
-    fs["K1"] >> M1;
-    fs["D1"] >> D1;
-    fs["K2"] >> M2;
-    fs["D2"] >> D2;
-    fs["R"] >> R;
-    fs["T"] >> T;
-    fs["R1"] >> R1;
-    fs["R2"] >> R2;
-    fs["P1"] >> P1;
-    fs["P2"] >> P2;
-    fs["Q"] >> Q;
+    fsint["M1"] >> M1;
+    fsint["D1"] >> D1;
+    fsint["M2"] >> M2;
+    fsint["D2"] >> D2;
+    fsext["R"] >> R;
+    fsext["T"] >> T;
+    fsext["R1"] >> R1;
+    fsext["R2"] >> R2;
+    fsext["P1"] >> P1;
+    fsext["P2"] >> P2;
+    fsext["Q"] >> Q;
 
     ///start video capture
     VideoCapture capturel(0);
     VideoCapture capturer(1);
-
-
+    waitKey(2000);
+    capturel >> imgRight;
+    capturer >> imgLeft;
+    waitKey(2000);
     int SADWindowSize = 5; /// block window size
     ///Call the constructor for StereoBM
     Ptr<StereoBM> sbm = StereoBM::create( 16, SADWindowSize );
@@ -161,7 +210,9 @@ int main( int argc, char** argv )
 
 
     int64 t = getTickCount();
-    while (1) {
+    int count =0;
+    while (true) {
+
 
         printf("Time elapsed: %fms\n", t*1000/getTickFrequency());
         t = getTickCount();
@@ -174,8 +225,8 @@ int main( int argc, char** argv )
             return -1;
         }
         ///SHRINK AND FILTER INPUT IMAGE
-        pyrDown(imgLeft, imgLeft);
-        pyrDown(imgRight, imgRight);
+//        pyrDown(imgLeft, imgLeft);
+//        pyrDown(imgRight, imgRight);
 //        bilateralFilter(imgLeftIN, imgLeft, 15, 150, 150);
 //        bilateralFilter(imgRightIN, imgRight, 15, 150, 150);
 
@@ -193,94 +244,149 @@ int main( int argc, char** argv )
         remap(imgRight, img2r, map21, map22, INTER_LINEAR);
 
         ///find balls in both frames
-        pair<vector<Ball>,Mat> leftB=b.findBalls(imgLeft,scenario);
-        if (algorithm==1 || algorithm==2){
-            ///Balls detection and Mask generation
-            ///FIXME: use rectified pair
+        ///for matching algorithms
+        //vector<LED> leftLEDs;
+//        if (algorithm==1 || algorithm==2){
+//            ///Balls detection and Mask generation
+//            ///FIXME: use rectified pair
 
-            Mat mask=leftB.second;
-            imgDisparity16S= Mat( imgLeft.rows, imgLeft.cols, CV_16U );
-            imgDisparity8U = Mat( imgLeft.rows, imgLeft.cols, CV_8SC1 );
+//            imgDisparity16S= Mat( imgLeft.rows, imgLeft.cols, CV_16U );
+//            imgDisparity8U = Mat( imgLeft.rows, imgLeft.cols, CV_8SC1 );
 
-            ///SHOW RECTIFIED
-            pyrDown(img1r, img1r_small);
-            pyrDown(img2r, img2r_small);
-            //imshow("rectified left", img1r);
-            //imshow("rectified right", img2r);
+//            ///SHOW RECTIFIED
+//            pyrDown(img1r, img1r_small);
+//            pyrDown(img2r, img2r_small);
+//            imshow("rectified left", img1r);
+//            imshow("rectified right", img2r);
+//            leftLEDs=L.findLEDs(img1r,scenario);
+//            Mat mask=leftB.second;
+//            ///COMPUTE DISPARITY
+//            ///TODO :: compute(img1r,img2r);
+//            ///FIX ME :: rectification output
+//            if(algorithm==1)
+//                imgDisparity16S=Depth.stereoBM(img1r,img2r,sbm);
+//            else if(algorithm==2)
+//                imgDisparity16S=Depth.stereoSGBM(img1r,img2r,sgbm);
 
-            ///COMPUTE DISPARITY
-            ///TODO :: compute(img1r,img2r);
-            ///FIX ME :: rectification output
-            if(algorithm==1)
-                imgDisparity16S=Depth.stereoBM(imgLeft,imgRight,sbm);
-            else if(algorithm==2)
-                imgDisparity16S=Depth.stereoSGBM(imgLeft,imgRight,sgbm);
+//            ///-- Check its extreme values
+//            double minVal; double maxVal;
+//            minMaxLoc( imgDisparity16S, &minVal, &maxVal );
+//    //      printf("Min disp: %f Max value: %f \n", minVal, maxVal);
 
-            ///-- Check its extreme values
-            double minVal; double maxVal;
-            minMaxLoc( imgDisparity16S, &minVal, &maxVal );
-    //      printf("Min disp: %f Max value: %f \n", minVal, maxVal);
+//            imgDisparity16S.convertTo( imgDisparity8U, CV_8UC1, 255/(maxVal - minVal));
+//    //      normalize(imgDisparity16S,imgDisparity8U,0,255,CV_MINMAX,CV_8U);
+//            imgDisparity16S.convertTo(disp8, CV_8U);
+//            imshow("disparity",disp8);
+//            Mat out=mask.mul(disp8);
+//            if(leftB.first.size()>0){
+//                getBallCenters(leftB.first,centers);
+//                reprojectImage3D(imgDisparity16S, xyz, Q,true,-1,centers);
+//                saveXYZ("depth", xyz,centers);
+//            }
+//            imshow("MASK x DISP",out);
 
-            imgDisparity16S.convertTo( imgDisparity8U, CV_8UC1, 255/(maxVal - minVal));
-    //      normalize(imgDisparity16S,imgDisparity8U,0,255,CV_MINMAX,CV_8U);
-            imgDisparity16S.convertTo(disp8, CV_8U);
-            imshow("disparity",disp8);
-            Mat out=mask.mul(disp8);
-            if(leftB.first.size()>0){
-                getBallCenters(leftB.first,centers);
-                reprojectImage3D(imgDisparity16S, xyz, Q,true,-1,centers);
-                saveXYZ("depth", xyz,centers);
-            }
-            imshow("MASK x DISP",out);
+//            /// keep only z values
+//    //        vector<Mat> channels(3);
+//    //        split(xyz, channels);
+//    //        disp_out = channels[2];
+//    //        disp_out.convertTo(disp_out, CV_8UC1);
+//    //        applyColorMap(disp_out, disp_out, 2);
+//    //        imshow("Depth Z",disp_out);
 
-            /// keep only z values
-    //        vector<Mat> channels(3);
-    //        split(xyz, channels);
-    //        disp_out = channels[2];
-    //        disp_out.convertTo(disp_out, CV_8UC1);
-    //        applyColorMap(disp_out, disp_out, 2);
-    //        imshow("Depth Z",disp_out);
+//            pyrDown(imgDisparity8U, imgDisparity8U);
+//            applyColorMap(imgDisparity8U, imgDisparity8U, 2);
+//            namedWindow( "Disparity ColoredMap", WINDOW_NORMAL );
+//            imshow( "Disparity ColoredMap", imgDisparity8U );
+//            centers.clear();
 
-            pyrDown(imgDisparity8U, imgDisparity8U);
-            applyColorMap(imgDisparity8U, imgDisparity8U, 2);
-            namedWindow( "Disparity ColoredMap", WINDOW_NORMAL );
-            imshow( "Disparity ColoredMap", imgDisparity8U );
-            centers.clear();
-
-        }
+//        }
 
 
         ///triangulatePoints
-        else{
-            pair<vector<Ball>,Mat> rightB=b.findBalls(imgRight,scenario);
+        //else{
+
+            vector<LED> rightLEDs=L.findLEDs(imgRight,scenario,0);
+            vector<LED> leftLEDs =L.findLEDs(imgLeft,scenario,1);
             if(scenario==1){
 
-                if(leftB.first.size()==3 && rightB.first.size()==3){
-                    srcBall=leftB.first;
-                    dstBall=rightB.first;
-                    for(int i=0; i<srcBall.size();i++){
-                        srcPts.push_back(Ball(srcBall.at(i)).getCenter());
-                        dstPts.push_back(Ball(dstBall.at(i)).getCenter());
+                if(leftLEDs.size()==3 && rightLEDs.size()==3){
+                    srcLEDs=leftLEDs;
+                    dstLEDs=rightLEDs;
+                    for(int i=0; i<srcLEDs.size();i++){
+                        srcPts.push_back(srcLEDs.at(i).getCenter());
+                        dstPts.push_back(dstLEDs.at(i).getCenter());
+                        std::cout<< srcLEDs.at(i).getCenter() <<std::endl;
+                        std::cout<< dstLEDs.at(i).getCenter() <<std::endl;
                     }
 
                     pnts3D=Depth.triangulatePts(srcPts,dstPts,P1,P2);
+                    cout<<"pnts3dsize="<<pnts3D.size()<<endl;
+                    outfile.open("fiftymicro/test.txt", std::ios_base::app);/*
+                    outfile <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<","
+                        <<pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<","
+                        <<pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1) <<"\n";*/
+
+                    cout <<"point1 3D: "<<pnts3D.at<double>(0,0)/pnts3D.at<double>(3,0) <<","
+                                       <<pnts3D.at<double>(1,0)/pnts3D.at<double>(3,0) << ","<<
+                                        pnts3D.at<double>(2,0)/pnts3D.at<double>(3,0)<<endl;
+
+                    cout <<"point2 3D: " <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<"," <<
+                                         pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<"," <<
+                                         pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1)<<endl;
+
+                    cout <<"point3 3D: " <<pnts3D.at<double>(0,2)/pnts3D.at<double>(3,2) <<"," <<
+                                         pnts3D.at<double>(1,2)/pnts3D.at<double>(3,2) <<"," <<
+                                         pnts3D.at<double>(2,2)/pnts3D.at<double>(3,2)<<endl;
+//                    cout <<"point1 2D: "<<srcLEDs.at(0).getCenter() <<"," <<dstLEDs.at(0).getCenter()<<endl;
+//                    cout <<"point2 2D: "<<srcLEDs.at(1).getCenter() <<"," <<dstLEDs.at(1).getCenter()<<endl;
+//                    cout <<"point3 2D: "<<srcLEDs.at(2).getCenter() <<"," <<dstLEDs.at(2).getCenter()<<endl;
+
+                    srcLEDs.clear();
+                    dstLEDs.clear();
+                    srcPts.clear();
+                    dstPts.clear();
+
+
                 }
             }
             ///scenario = 2 balls
-            else{
-                if(leftB.first.size() == rightB.first.size()==2){
-                    srcBall=leftB.first;
-                    dstBall=rightB.first;
-                    for(int i=0; i<srcBall.size();i++){
-                        srcPts.push_back(Ball(srcBall.at(i)).getCenter());
-                        dstPts.push_back(Ball(dstBall.at(i)).getCenter());
-                    }
-                    pnts3D=Depth.triangulatePts(srcPts,dstPts,P1,P2);
-                }
-            }
-        }
+//            else{
+//                if(leftB.first.size() ==2 && rightB.first.size()==2){
+//                    count++;
+//                    srcLEDs=leftLEDs;
+//                    dstLEDs=rightLEDs;
+//                    for(int i=0; i<srcLEDs.size();i++){
+//                        srcPts.push_back(LED(srcLEDs.at(i)).getCenter());
+//                        dstPts.push_back(LED(dstLEDs.at(i)).getCenter());
+//                    }
+//                    pnts3D=Depth.triangulatePts(srcPts,dstPts,P1,P2);
+//                    outfile.open("fiftymicro/test.txt", std::ios_base::app);
+//                    outfile <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<","
+//                            <<pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<","
+//                            <<pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1) <<"\n";
+//                    outfile.close();
 
-        char c = (char)waitKey(5);
+//                    cout <<"point1 2D: "<<srcBall.at(0).getCenter() <<"," <<dstBall.at(0).getCenter()<<endl;
+//                    cout <<"point1 3D: "<<pnts3D.at<double>(0,0)/pnts3D.at<double>(3,0) <<","
+//                      <<pnts3D.at<double>(1,0)/pnts3D.at<double>(3,0) << ","<<
+//                           pnts3D.at<double>(2,0)/pnts3D.at<double>(3,0)<<endl;
+//                    cout << " " <<endl;
+//                    cout <<"point2 2D: "<<srcBall.at(1).getCenter() <<"," <<dstBall.at(1).getCenter()<<endl;
+//                    cout <<"point2 3D: " <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<"," <<
+//                        pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<"," <<
+//                           pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1)<<endl;
+//                    srcPts.clear();
+//                    dstPts.clear();
+//                    srcBall.clear();
+//                    srcPts.clear();
+//                    dstPts.clear();
+//                    cout << " " <<endl;
+//                }
+//            }
+
+//        }
+
+        char c = (char)waitKey(30);
         if (c == 27){
             break;
         }
@@ -292,188 +398,6 @@ int main( int argc, char** argv )
     return EXIT_SUCCESS;
 }
 
-
-int KalmanTracking()// main( int argc, char** argv )
-{
-    // Camera frame
-    cv::Mat frame;
-    vector<Point> ayre;
-    Ball b("balls",0,Point2f(1,1),ayre);
-
-    // >>>> Kalman Filter
-    int stateSize = 6;
-    int measSize = 4;
-    int contrSize = 0;
-
-    unsigned int type = CV_32F;
-    cv::KalmanFilter kf(stateSize, measSize, contrSize, type);
-
-    cv::Mat state(stateSize, 1, type);  // [x,y,v_x,v_y,w,h]
-    cv::Mat meas(measSize, 1, type);    // [z_x,z_y,z_w,z_h]
-    cv::setIdentity(kf.transitionMatrix);
-    kf.measurementMatrix = cv::Mat::zeros(measSize, stateSize, type);
-    kf.measurementMatrix.at<float>(0) = 1.0f;
-    kf.measurementMatrix.at<float>(7) = 1.0f;
-    kf.measurementMatrix.at<float>(16) = 1.0f;
-    kf.measurementMatrix.at<float>(23) = 1.0f;
-    kf.processNoiseCov.at<float>(0) = 1e-2;
-    kf.processNoiseCov.at<float>(7) = 1e-2;
-    kf.processNoiseCov.at<float>(14) = 5.0f;
-    kf.processNoiseCov.at<float>(21) = 5.0f;
-    kf.processNoiseCov.at<float>(28) = 1e-2;
-    kf.processNoiseCov.at<float>(35) = 1e-2;
-    cv::setIdentity(kf.measurementNoiseCov, cv::Scalar(1e-1));
-    int idx = 0;
-    cv::VideoCapture cap;
-    if (!cap.open(idx)){
-        cout << "Webcam not connected.\n";
-        return EXIT_FAILURE;
-    }
-    cout << "\nHit 'q' to exit...\n";
-    char ch = 0;
-
-    double ticks = 0;
-    bool found = false;
-
-    int notFoundCount = 0;
-    while (ch != 'q' && ch != 'Q')
-    {
-        double precTick = ticks;
-        ticks = (double) cv::getTickCount();
-
-        double dT = (ticks - precTick) / cv::getTickFrequency(); //seconds
-
-        cap >> frame;
-        cout << frame.size() <<endl;
-        cv::Mat res;
-        frame.copyTo( res );
-        cvtColor(frame,frame,CV_BGR2GRAY);
-
-        pair<vector<Ball>,Mat> biz=b.findBalls(frame,2);
-        cout <<"bizza"<<endl;
-
-        if (found)
-        {
-            kf.transitionMatrix.at<float>(2) = dT;
-            kf.transitionMatrix.at<float>(9) = dT;
-
-            cout << "dT:" << endl << dT << endl;
-
-            state = kf.predict();
-            cout << "State post:" << endl << state << endl;
-
-            cv::Rect predRect;
-            predRect.width = state.at<float>(4);
-            predRect.height = state.at<float>(5);
-            predRect.x = state.at<float>(0) - predRect.width / 2;
-            predRect.y = state.at<float>(1) - predRect.height / 2;
-
-            cv::Point center;
-            center.x = state.at<float>(0);
-            center.y = state.at<float>(1);
-            cv::circle(res, center, 2, CV_RGB(255,0,0), -1);
-
-            cv::rectangle(res, predRect, CV_RGB(255,0,0), 2);
-        }
-
-        vector<vector<cv::Point> > balls;
-        vector<cv::Rect> ballsBox;
-        for (size_t i = 0; i < biz.first.size(); i++)
-        {
-            cv::Rect bBox;
-            bBox = cv::boundingRect(biz.first[i].getContour());
-
-//            float ratio = (float) bBox.width / (float) bBox.height;
-//            if (ratio > 1.0f)
-//                ratio = 1.0f / ratio;
-
-//            // Searching for a bBox almost square
-//            if (ratio > 0.75 && bBox.area() >= 400)
-//            {
-                balls.push_back(biz.first[i].getContour());
-                ballsBox.push_back(bBox);
-//            }
-                break;
-        }
-
-        cout << "Balls found:" << ballsBox.size() << endl;
-
-        // >>>>> Detection result
-        for (size_t i = 0; i < balls.size(); i++)
-        {
-            cv::drawContours(res, balls, i, CV_RGB(20,150,20), 1);
-            cv::rectangle(res, ballsBox[i], CV_RGB(0,255,0), 2);
-
-            cv::Point center;
-            center.x = ballsBox[i].x + ballsBox[i].width / 2;
-            center.y = ballsBox[i].y + ballsBox[i].height / 2;
-            cv::circle(res, center, 2, CV_RGB(20,150,20), -1);
-
-            stringstream sstr;
-            sstr << "(" << center.x << "," << center.y << ")";
-            cv::putText(res, sstr.str(),
-                        cv::Point(center.x + 3, center.y - 3),
-                        cv::FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(20,150,20), 2);
-        }
-
-
-        //  Kalman Update
-        if (balls.size() == 0)
-        {
-            notFoundCount++;
-            cout << "notFoundCount:" << notFoundCount << endl;
-            if( notFoundCount >= 100 )
-            {
-                found = false;
-            }
-            /*else
-                kf.statePost = state;*/
-        }
-        else
-        {
-            notFoundCount = 0;
-
-            meas.at<float>(0) = ballsBox[0].x + ballsBox[0].width / 2;
-            meas.at<float>(1) = ballsBox[0].y + ballsBox[0].height / 2;
-            meas.at<float>(2) = (float)ballsBox[0].width;
-            meas.at<float>(3) = (float)ballsBox[0].height;
-
-            if (!found) // First detection!
-            {
-                //  Initialization
-                kf.errorCovPre.at<float>(0) = 1; // px
-                kf.errorCovPre.at<float>(7) = 1; // px
-                kf.errorCovPre.at<float>(14) = 1;
-                kf.errorCovPre.at<float>(21) = 1;
-                kf.errorCovPre.at<float>(28) = 1; // px
-                kf.errorCovPre.at<float>(35) = 1; // px
-
-                state.at<float>(0) = meas.at<float>(0);
-                state.at<float>(1) = meas.at<float>(1);
-                state.at<float>(2) = 0;
-                state.at<float>(3) = 0;
-                state.at<float>(4) = meas.at<float>(2);
-                state.at<float>(5) = meas.at<float>(3);
-
-
-                kf.statePost = state;
-
-                found = true;
-            }
-            else
-                kf.correct(meas); // Kalman Correction
-
-            cout << "Measure matrix:" << endl << meas << endl;
-        }
-
-        // Final result
-        cv::imshow("Tracking", res);
-
-        ch = cv::waitKey(1);
-    }
-
-    return EXIT_SUCCESS;
-}
 
 
 
