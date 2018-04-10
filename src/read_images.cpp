@@ -32,13 +32,13 @@ int main(int argc, char const *argv[])
   char ch = 0;
   while (true) {
     ch = 0;
-    cap1 >> img1;
-    cap2 >> img2;
+    cap2 >> img1;
+    cap1 >> img2;
     imshow("cap1",img1);
     imshow("cap2",img2);
-    ch = cv::waitKey(1);
+    ch = cv::waitKey(30);
 //    std::cout <<"not saved-" <<std::endl;
-    if (ch=='k') {
+    if (ch==32) {//space key to save frame
       x++;
       std::cout <<"saved-"<< x <<std::endl;
       char filename1[200], filename2[200];

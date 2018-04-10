@@ -1,17 +1,25 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+
+#include <boost/thread/thread.hpp>
+#include <pcl/common/common_headers.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/console/parse.h>
+
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "Ball.h"
 #include "StereoMatching.h"
-#include "popt_pp.h"
-#include <fstream>
-#include "matplotlibcpp.h"
-#include <string>
 #include "LED.h"
+
+
+
+
 using namespace std;
 using namespace cv;
-namespace plt = matplotlibcpp;
 ///Save 3D points out of disparity map
 static void saveXYZ(const char* filename, const Mat& mat , vector<Point2d> centers)
 {
@@ -35,39 +43,6 @@ static void saveXYZ(const char* filename, const Mat& mat , vector<Point2d> cente
     fclose(fp);
 }
 
-void testPlot(){
-    int n = 1000;
-        std::vector<double> x, y, z;
-
-        for(int i=0; i<n; i++) {
-            x.push_back(i);
-            y.push_back(i*2);
-            //z.push_back(log(i));
-            string a = "z";
-            string b = "z";
-            if (i % 10 == 0) {
-                // Clear previous plot
-                plt::clf();
-                // Plot line from given x and y data. Color is selected automatically.
-                plt::plot(x, y);
-                plt::subplot(1,1,1);
-                //plt::plot(x,y,std::make_pair(a,b));
-                // Plot a line whose name will show up as "log(x)" in the legend.
-                plt::named_plot("log(x)", x, z);
-
-                // Set x-axis to interval [0,1000000]
-                plt::xlim(0, 1000);
-                plt::ylim(0,2000);
-
-                // Add graph title
-                plt::title("Sample figure");
-                // Enable legend.
-                plt::legend();
-                // Display plot continuously
-                plt::pause(0.0000001);
-            }
-        }
-}
 
 void reprojectImage3D( InputArray _disparity,
                             OutputArray __3dImage, InputArray _Qmat,
@@ -143,30 +118,115 @@ void getLEDsCenters(vector<LED> b , vector<Point2d> &centers){
     }
 }
 
+boost::shared_ptr<pcl::visualization::PCLVisualizer> customColourVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloudA,
+                                                                      pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloudB,
+                                                                      pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloudC)
+{
+  // --------------------------------------------
+  // -----Open 3D viewer and add point cloud-----
+  // --------------------------------------------
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer->setBackgroundColor (0, 0, 0);
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_colorA(cloudA, 255, 0, 0);
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_colorB(cloudB, 0, 255, 0);
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_colorC(cloudC, 0, 0, 255);
+
+  viewer->addPointCloud<pcl::PointXYZ> (cloudA, single_colorA, "cloudA");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloudA");
+
+  viewer->addPointCloud<pcl::PointXYZ> (cloudB, single_colorB, "cloudB");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloudB");
+  viewer->addPointCloud<pcl::PointXYZ> (cloudC, single_colorC, "cloudC");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloudC");
+  viewer->addCoordinateSystem (1.0);
+  viewer->initCameraParameters ();
+  return (viewer);
+}
+
+unsigned int text_id = 0;
+void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
+                            void* viewer_void)
+{
+  pcl::visualization::PCLVisualizer *viewer = static_cast<pcl::visualization::PCLVisualizer *> (viewer_void);
+  if (event.getKeySym () == "r" && event.keyDown ())
+  {
+    std::cout << "r was pressed => removing all text" << std::endl;
+
+    char str[512];
+    for (unsigned int i = 0; i < text_id; ++i)
+    {
+      sprintf (str, "text#%03d", i);
+      viewer->removeShape (str);
+    }
+    text_id = 0;
+  }
+}
+
+void mouseEventOccurred (const pcl::visualization::MouseEvent &event,
+                         void* viewer_void)
+{
+  pcl::visualization::PCLVisualizer *viewer = static_cast<pcl::visualization::PCLVisualizer *> (viewer_void);
+  if (event.getButton () == pcl::visualization::MouseEvent::LeftButton &&
+      event.getType () == pcl::visualization::MouseEvent::MouseButtonRelease)
+  {
+    std::cout << "Left mouse button released at position (" << event.getX () << ", " << event.getY () << ")" << std::endl;
+
+    char str[512];
+    sprintf (str, "text#%03d", text_id ++);
+    viewer->addText ("clicked here", event.getX (), event.getY (), str);
+  }
+}
+
+boost::shared_ptr<pcl::visualization::PCLVisualizer> interactionCustomizationVis ()
+{
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer->setBackgroundColor (0, 0, 0);
+  viewer->addCoordinateSystem (1.0);
+
+  viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)viewer.get ());
+  viewer->registerMouseCallback (mouseEventOccurred, (void*)viewer.get ());
+
+  return (viewer);
+}
+
 int main( int argc, char** argv )
 {
     //testPlot();
-    FILE* fp = fopen("testData", "wt");
-    std::ofstream outfile;
-    outfile.open("fiftymicro/test.txt", std::ios_base::app);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptrA (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloud_colorA(cloud_ptrA, 255, 0, 0);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptrB (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloud_colorB(cloud_ptrB, 0, 255, 0);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptrC (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloud_colorC(cloud_ptrC, 0, 0, 255);
+
+    pcl::PointXYZ pointA,pointB,pointC;
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    viewer = customColourVis(cloud_ptrA,cloud_ptrB,cloud_ptrC);
+
     int scenario=1; ///1 for three balls , 2 for two balls
-    int algorithm = 3;///1 for stereoBM , 2 for stereoSGBM , 3 for Triangulation
     ///STEREORECTIFY DATA
     vector<Point> cntrs;
     LED L("led",0,Point2f(1,1),cntrs);
-    Mat xyz,disp8;
-    Mat imgLeft, imgRight, disp_out;
+    Mat imgLeft, imgRight;
     Mat map11, map12, map21, map22;
-    Mat img1r, img2r, img1r_small, img2r_small;
-    Mat imgDisparity16S, imgDisparity8U;
+    Mat img1r, img2r;
     ///for triangulate points algorithm
     vector<Point2d> srcPts;
     vector<Point2d> dstPts;
-    vector<Point2d> centers;
     vector<LED> srcLEDs;
     vector<LED> dstLEDs;
     Mat pnts3D;
+    vector<LED> rightLEDs,leftLEDs;
+    Size img_size;
 
+    std::ofstream out;
+
+    std::ofstream out1;
+
+    std::ofstream out2;
     ///get calibration params
     string calibration_filenameext = "extrinsics.yml";
     string calibration_filenameint = "intrinsics.yml";
@@ -199,208 +259,142 @@ int main( int argc, char** argv )
     capturel >> imgRight;
     capturer >> imgLeft;
     waitKey(2000);
-    int SADWindowSize = 5; /// block window size
-    ///Call the constructor for StereoBM
-    Ptr<StereoBM> sbm = StereoBM::create( 16, SADWindowSize );
-    Ptr<StereoSGBM> sgbm = StereoSGBM::create(0,16,3);
-
 
     ///Depth map instance;
     DepthMap Depth(1);
 
 
     int64 t = getTickCount();
-    int count =0;
-    while (true) {
+    int count = 0;
+    double t1=0;
+    bool recording=false;
+
+    while (!viewer->wasStopped()) {
 
 
         printf("Time elapsed: %fms\n", t*1000/getTickFrequency());
+        t1= t*1000/getTickFrequency();
         t = getTickCount();
 
         ///grab frames
         capturel >> imgLeft;
         capturer >> imgRight;
-        if(imgLeft.empty() | imgRight.empty()){
+        if(imgLeft.empty() || imgRight.empty()){
             cout << "camera not connected" << endl;
             return -1;
         }
-        ///SHRINK AND FILTER INPUT IMAGE
-//        pyrDown(imgLeft, imgLeft);
-//        pyrDown(imgRight, imgRight);
-//        bilateralFilter(imgLeftIN, imgLeft, 15, 150, 150);
-//        bilateralFilter(imgRightIN, imgRight, 15, 150, 150);
 
-        ///DISP MAT AND CONVERT TO GRAYSCALE
         cvtColor(imgLeft, imgLeft, CV_BGR2GRAY);
         cvtColor(imgRight, imgRight, CV_BGR2GRAY);
         imshow("left Image",imgLeft);
         imshow("right Image",imgRight);
 
         ///rectification
-        Size img_size = imgLeft.size();
+        ///FIXME
+        img_size = imgLeft.size();
         initUndistortRectifyMap(M1, D1, R1, P1, img_size, CV_16SC2, map11, map12);
         initUndistortRectifyMap(M2, D2, R2, P2, img_size, CV_16SC2, map21, map22);
         remap(imgLeft, img1r, map11, map12, INTER_LINEAR);
         remap(imgRight, img2r, map21, map22, INTER_LINEAR);
 
-        ///find balls in both frames
-        ///for matching algorithms
-        //vector<LED> leftLEDs;
-//        if (algorithm==1 || algorithm==2){
-//            ///Balls detection and Mask generation
-//            ///FIXME: use rectified pair
-
-//            imgDisparity16S= Mat( imgLeft.rows, imgLeft.cols, CV_16U );
-//            imgDisparity8U = Mat( imgLeft.rows, imgLeft.cols, CV_8SC1 );
-
-//            ///SHOW RECTIFIED
-//            pyrDown(img1r, img1r_small);
-//            pyrDown(img2r, img2r_small);
-//            imshow("rectified left", img1r);
-//            imshow("rectified right", img2r);
-//            leftLEDs=L.findLEDs(img1r,scenario);
-//            Mat mask=leftB.second;
-//            ///COMPUTE DISPARITY
-//            ///TODO :: compute(img1r,img2r);
-//            ///FIX ME :: rectification output
-//            if(algorithm==1)
-//                imgDisparity16S=Depth.stereoBM(img1r,img2r,sbm);
-//            else if(algorithm==2)
-//                imgDisparity16S=Depth.stereoSGBM(img1r,img2r,sgbm);
-
-//            ///-- Check its extreme values
-//            double minVal; double maxVal;
-//            minMaxLoc( imgDisparity16S, &minVal, &maxVal );
-//    //      printf("Min disp: %f Max value: %f \n", minVal, maxVal);
-
-//            imgDisparity16S.convertTo( imgDisparity8U, CV_8UC1, 255/(maxVal - minVal));
-//    //      normalize(imgDisparity16S,imgDisparity8U,0,255,CV_MINMAX,CV_8U);
-//            imgDisparity16S.convertTo(disp8, CV_8U);
-//            imshow("disparity",disp8);
-//            Mat out=mask.mul(disp8);
-//            if(leftB.first.size()>0){
-//                getBallCenters(leftB.first,centers);
-//                reprojectImage3D(imgDisparity16S, xyz, Q,true,-1,centers);
-//                saveXYZ("depth", xyz,centers);
-//            }
-//            imshow("MASK x DISP",out);
-
-//            /// keep only z values
-//    //        vector<Mat> channels(3);
-//    //        split(xyz, channels);
-//    //        disp_out = channels[2];
-//    //        disp_out.convertTo(disp_out, CV_8UC1);
-//    //        applyColorMap(disp_out, disp_out, 2);
-//    //        imshow("Depth Z",disp_out);
-
-//            pyrDown(imgDisparity8U, imgDisparity8U);
-//            applyColorMap(imgDisparity8U, imgDisparity8U, 2);
-//            namedWindow( "Disparity ColoredMap", WINDOW_NORMAL );
-//            imshow( "Disparity ColoredMap", imgDisparity8U );
-//            centers.clear();
-
-//        }
 
 
-        ///triangulatePoints
-        //else{
+        rightLEDs=L.findLEDs(imgRight,scenario,0);
+        leftLEDs =L.findLEDs(imgLeft,scenario,1);
+        if(scenario==1){
 
-            vector<LED> rightLEDs=L.findLEDs(imgRight,scenario,0);
-            vector<LED> leftLEDs =L.findLEDs(imgLeft,scenario,1);
-            if(scenario==1){
+            if(leftLEDs.size()==3 && rightLEDs.size()==3){
+                srcLEDs=leftLEDs;
+                dstLEDs=rightLEDs;
+                for(int i=0; i<srcLEDs.size();i++){
+                    srcPts.push_back(srcLEDs.at(i).getCenter());
+                    dstPts.push_back(dstLEDs.at(i).getCenter());
+                    std::cout<< srcLEDs.at(i).getCenter() <<std::endl;
+                    std::cout<< dstLEDs.at(i).getCenter() <<std::endl;
+                }
 
-                if(leftLEDs.size()==3 && rightLEDs.size()==3){
-                    srcLEDs=leftLEDs;
-                    dstLEDs=rightLEDs;
-                    for(int i=0; i<srcLEDs.size();i++){
-                        srcPts.push_back(srcLEDs.at(i).getCenter());
-                        dstPts.push_back(dstLEDs.at(i).getCenter());
-                        std::cout<< srcLEDs.at(i).getCenter() <<std::endl;
-                        std::cout<< dstLEDs.at(i).getCenter() <<std::endl;
+                pnts3D=Depth.triangulatePts(srcPts,dstPts,P1,P2);
+//                cout<<"pnts3dsize="<<pnts3D.size()<<endl;
+
+
+                if(recording){
+                    out.open ("data/point1.txt", std::ios::app);
+                    out1.open("data/point2.txt", std::ios::app);
+                    out2.open("data/point3.txt", std::ios::app);
+
+
+
+                    //save points
+                    out <<pnts3D.at<double>(0,0)/pnts3D.at<double>(3,0) <<","
+                    <<pnts3D.at<double>(1,0)/pnts3D.at<double>(3,0) <<","
+                    <<pnts3D.at<double>(2,0)/pnts3D.at<double>(3,0) <<","<<t1<<"\n";
+
+                    out1 <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<","
+                    <<pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<","
+                    <<pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1) <<","<<t1<<"\n";
+
+                    out2 <<pnts3D.at<double>(0,2)/pnts3D.at<double>(3,2) <<","
+                    <<pnts3D.at<double>(1,2)/pnts3D.at<double>(3,2) <<","
+                    <<pnts3D.at<double>(2,2)/pnts3D.at<double>(3,2) <<"," <<t1<<"\n";
+
+                    out.close();
+                    out1.close();
+                    out2.close();
+                    cout <<"point1 3D: "<<pnts3D.at<double>(0,0)/pnts3D.at<double>(3,0) <<","
+                                           <<pnts3D.at<double>(1,0)/pnts3D.at<double>(3,0) << ","<<
+                                            pnts3D.at<double>(2,0)/pnts3D.at<double>(3,0)<<","<<t1<<endl;
+
                     }
 
-                    pnts3D=Depth.triangulatePts(srcPts,dstPts,P1,P2);
-                    cout<<"pnts3dsize="<<pnts3D.size()<<endl;
-                    outfile.open("fiftymicro/test.txt", std::ios_base::app);/*
-                    outfile <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<","
-                        <<pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<","
-                        <<pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1) <<"\n";*/
+                    //update clouds for PCL visualization
+                    pointA.x=pnts3D.at<double>(0,0)/pnts3D.at<double>(3,0);
+                    pointA.y=pnts3D.at<double>(1,0)/pnts3D.at<double>(3,0);
+                    pointA.z=pnts3D.at<double>(2,0)/pnts3D.at<double>(3,0);
+                    cloud_ptrA->points.push_back(pointA);
 
-                    cout <<"point1 3D: "<<pnts3D.at<double>(0,0)/pnts3D.at<double>(3,0) <<","
-                                       <<pnts3D.at<double>(1,0)/pnts3D.at<double>(3,0) << ","<<
-                                        pnts3D.at<double>(2,0)/pnts3D.at<double>(3,0)<<endl;
+                    pointB.x=pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1);
+                    pointB.y=pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1);
+                    pointB.z=pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1);
+                    cloud_ptrB->points.push_back(pointB);
 
-                    cout <<"point2 3D: " <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<"," <<
-                                         pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<"," <<
-                                         pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1)<<endl;
+                    pointC.x=pnts3D.at<double>(0,2)/pnts3D.at<double>(3,2);
+                    pointC.y=pnts3D.at<double>(1,2)/pnts3D.at<double>(3,2);
+                    pointC.z=pnts3D.at<double>(2,2)/pnts3D.at<double>(3,2);
+                    cloud_ptrC->points.push_back(pointC);
 
-                    cout <<"point3 3D: " <<pnts3D.at<double>(0,2)/pnts3D.at<double>(3,2) <<"," <<
-                                         pnts3D.at<double>(1,2)/pnts3D.at<double>(3,2) <<"," <<
-                                         pnts3D.at<double>(2,2)/pnts3D.at<double>(3,2)<<endl;
-//                    cout <<"point1 2D: "<<srcLEDs.at(0).getCenter() <<"," <<dstLEDs.at(0).getCenter()<<endl;
-//                    cout <<"point2 2D: "<<srcLEDs.at(1).getCenter() <<"," <<dstLEDs.at(1).getCenter()<<endl;
-//                    cout <<"point3 2D: "<<srcLEDs.at(2).getCenter() <<"," <<dstLEDs.at(2).getCenter()<<endl;
+               //clear points after each frame
+               srcLEDs.clear();
+               dstLEDs.clear();
+               srcPts.clear();
+               dstPts.clear();
 
-                    srcLEDs.clear();
-                    dstLEDs.clear();
-                    srcPts.clear();
-                    dstPts.clear();
+               count++;
 
 
-                }
-            }
-            ///scenario = 2 balls
-//            else{
-//                if(leftB.first.size() ==2 && rightB.first.size()==2){
-//                    count++;
-//                    srcLEDs=leftLEDs;
-//                    dstLEDs=rightLEDs;
-//                    for(int i=0; i<srcLEDs.size();i++){
-//                        srcPts.push_back(LED(srcLEDs.at(i)).getCenter());
-//                        dstPts.push_back(LED(dstLEDs.at(i)).getCenter());
-//                    }
-//                    pnts3D=Depth.triangulatePts(srcPts,dstPts,P1,P2);
-//                    outfile.open("fiftymicro/test.txt", std::ios_base::app);
-//                    outfile <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<","
-//                            <<pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<","
-//                            <<pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1) <<"\n";
-//                    outfile.close();
+          }
 
-//                    cout <<"point1 2D: "<<srcBall.at(0).getCenter() <<"," <<dstBall.at(0).getCenter()<<endl;
-//                    cout <<"point1 3D: "<<pnts3D.at<double>(0,0)/pnts3D.at<double>(3,0) <<","
-//                      <<pnts3D.at<double>(1,0)/pnts3D.at<double>(3,0) << ","<<
-//                           pnts3D.at<double>(2,0)/pnts3D.at<double>(3,0)<<endl;
-//                    cout << " " <<endl;
-//                    cout <<"point2 2D: "<<srcBall.at(1).getCenter() <<"," <<dstBall.at(1).getCenter()<<endl;
-//                    cout <<"point2 3D: " <<pnts3D.at<double>(0,1)/pnts3D.at<double>(3,1) <<"," <<
-//                        pnts3D.at<double>(1,1)/pnts3D.at<double>(3,1) <<"," <<
-//                           pnts3D.at<double>(2,1)/pnts3D.at<double>(3,1)<<endl;
-//                    srcPts.clear();
-//                    dstPts.clear();
-//                    srcBall.clear();
-//                    srcPts.clear();
-//                    dstPts.clear();
-//                    cout << " " <<endl;
-//                }
-//            }
 
-//        }
+        }
+
+        viewer->updatePointCloud(cloud_ptrA,cloud_colorA,"cloudA");
+        viewer->updatePointCloud(cloud_ptrB,cloud_colorB,"cloudB");
+        viewer->updatePointCloud(cloud_ptrC,cloud_colorC,"cloudC");
+        viewer->spinOnce (10);
 
         char c = (char)waitKey(30);
-        if (c == 27){
+        if (c == 32){//space key
+            recording=true;
+        }
+
+        else if(c==27){
             break;
         }
-         t = getTickCount() - t;
+
+        t = getTickCount() - t;
 
     }
-    destroyAllWindows();
 
+
+    destroyAllWindows();
     return EXIT_SUCCESS;
 }
-
-
-
-
-
-
-

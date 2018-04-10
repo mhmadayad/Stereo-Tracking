@@ -16,7 +16,7 @@
 #include <opencv2/video/video.hpp>
 #include <opencv2/core/utility.hpp>
 
-DepthMap::DepthMap(int x ){x=1;}
+DepthMap::DepthMap(int x){x=1;}
 
 Mat DepthMap::stereoBM(cv::Mat leftimg , cv::Mat rightimg, cv::Ptr<cv::StereoBM> sbm){
     Mat imgDisparity16S= Mat( leftimg.rows, rightimg.cols, CV_16U );

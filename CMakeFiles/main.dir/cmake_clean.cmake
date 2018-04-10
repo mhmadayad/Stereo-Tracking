@@ -1,7 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/main.dir/src/main.cpp.o"
   "CMakeFiles/main.dir/src/LED.cpp.o"
-  "CMakeFiles/main.dir/src/Ball.cpp.o"
   "CMakeFiles/main.dir/src/StereoMatching.cpp.o"
   "main.pdb"
   "main"
